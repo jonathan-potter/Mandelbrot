@@ -1,4 +1,4 @@
-(function (window) {
+;(function (window) {
 	var canvas, colormap, initializeMatrix, iterationRange, iterations, full_mandelbrot, mandelbrot, mapNumberRange, pixels,
 		x_range, y_range;
 
@@ -8,6 +8,8 @@
 	iterations = 64;
 
 	mandelbrot = function (pixel, iteration) {
+    if (pixel.crossoverIteration) { return pixel; }
+    
 		var crossoverIteration, c, imaginary, real, z;
 		/** the base equation for the mandelbrot set is  **/
 		/** f(z) = z^2 + c **/
@@ -39,7 +41,7 @@
 		if (z.crossoverIteration) {
 			r = ~~(mapNumberToRange({min: 0, max: 255}, range, z.crossoverIteration));
 		} else {
-			r = 255;
+			r = 0;
 		}
 
 		return r;
