@@ -9,19 +9,19 @@
 
 	mandelbrot = function (pixel, iteration) {
     if (pixel.crossoverIteration) { return pixel; }
-    
-		var crossoverIteration, c, imaginary, real, z;
 		/** the base equation for the mandelbrot set is  **/
 		/** f(z) = z^2 + c **/
 
-		c = pixel.c;
-		z = pixel.z;
-		real = z.real * z.real - z.imaginary * z.imaginary + c.real;
-		imaginary = 2 * z.real * z.imaginary + c.imaginary;
+		var c = pixel.c;
+		var z = pixel.z;
+		var real = z.real * z.real - z.imaginary * z.imaginary + c.real;
+		var imaginary = 2 * z.real * z.imaginary + c.imaginary;
 
-		crossoverIteration = pixel.crossoverIteration;
+    var crossoverIteration
 		if (real * real + imaginary * imaginary > 4) {
-			crossoverIteration = crossoverIteration || iteration;
+			crossoverIteration = iteration;
+		} else {
+		  crossoverIteration = null
 		}
 
 		return {c: c, z: {real: real, imaginary: imaginary}, crossoverIteration: crossoverIteration};
@@ -99,13 +99,13 @@
 		matrix = initializeMatrix(pixels);
 
 		/** iteration **/
-		for (iteration = 0; iteration < iterations; iteration++) {
-			for (var x_index = 0; x_index < pixels; x_index++) {
-				for (var y_index = 0; y_index < pixels; y_index++) {
-					pixel = matrix[x_index][y_index];
-
-					matrix[x_index][y_index] = mandelbrot(pixel, iteration);
+		for (var x_index = 0; x_index < pixels; x_index++) {
+			for (var y_index = 0; y_index < pixels; y_index++) {
+				pixel = matrix[x_index][y_index];
+    		for (iteration = 0; iteration < iterations; iteration++) {
+					pixel = mandelbrot(pixel, iteration);
 				}
+        matrix[x_index][y_index] = pixel
 			}
 		}
 
