@@ -1,14 +1,16 @@
+'use strict'
+
 ;(function (window) {
-	var canvas, colormap, initializeMatrix, iterationRange, iterations, full_mandelbrot, mandelbrot, mapNumberRange, pixels,
-		x_range, y_range;
+	var colormap, initializeMatrix, iterationRange, iterations, full_mandelbrot, mandelbrot, mapNumberRange, pixels,
+		x_range, y_range, smoothColor, mapNumberToRange;
 
-	x_range = [-2.0, 1];
-	y_range = [-1.5, 1.5];
+	x_range = [-3.0, 3];
+	y_range = [-3, 3];
 	pixels = 400;
-	iterations = 64;
+	iterations = 128;
 
-	mandelbrot = function (pixel, iteration) {
-    if (pixel.crossoverIteration) { return pixel; }
+	mandelbrot = function (pixel, iteration, override) {
+    if (pixel.crossoverIteration && !override) { return pixel; }
 		/** the base equation for the mandelbrot set is  **/
 		/** f(z) = z^2 + c **/
 
@@ -17,14 +19,16 @@
 		var real = z.real * z.real - z.imaginary * z.imaginary + c.real;
 		var imaginary = 2 * z.real * z.imaginary + c.imaginary;
 
-    var crossoverIteration
-		if (real * real + imaginary * imaginary > 4) {
-			crossoverIteration = iteration;
-		} else {
-		  crossoverIteration = null
+    var newPixel = {c: c, z: {real: real, imaginary: imaginary}, crossoverIteration: pixel.crossoverIteration || null }
+		if (real * real + imaginary * imaginary > 4 && !override) {
+			newPixel.crossoverIteration = iteration;
+      
+      for (var i = 0; i < 4; i++) {
+        newPixel = mandelbrot(newPixel, null, true)
+      }
 		}
 
-		return {c: c, z: {real: real, imaginary: imaginary}, crossoverIteration: crossoverIteration};
+		return newPixel;
 	};
 
 	mapNumberToRange = function (mappedRange, range, value) {
@@ -35,16 +39,12 @@
 		return (value - range.min) / rangeScale + mappedRange.min;
 	};
 
-	colormap = function (z, range) {
-		var r;
-
-		if (z.crossoverIteration) {
-			r = ~~(mapNumberToRange({min: 0, max: 255}, range, z.crossoverIteration));
-		} else {
-			r = 0;
-		}
-
-		return r;
+	colormap = function (pixel, range) {
+    // var z = pixel.z;
+    // var real = z.real;
+    // var imaginary = z.imaginary;
+    // var zmag = Math.sqrt(real * real + imaginary * imaginary);
+    return ~~mapNumberToRange({min: 0, max: 255}, {min: 0, max: 255}, pixel.crossoverIteration);
 	};
 
 	iterationRange = function (matrix) {
@@ -93,7 +93,7 @@
 	};
 
 	full_mandelbrot = function (pixels, iterations) {
-		var ctx, data, delta_x, delta_y, imageData, iteration, matrix, pixel, range, range_y, x_index, y_index;
+		var ctx, delta_x, delta_y, imageData, iteration, matrix, pixel, range, range_y;
 
 		// initial setup
 		matrix = initializeMatrix(pixels);
@@ -109,7 +109,7 @@
 			}
 		}
 
-		canvas = document.getElementById("mandelbrot");
+		var canvas = document.getElementById("mandelbrot");
 		canvas.width = pixels;
 		canvas.height = pixels;
 		ctx = canvas.getContext("2d");
@@ -119,9 +119,12 @@
 		range = iterationRange(matrix);
 		for (var x = 0; x < pixels; x++) {
 			for (var y = 0; y < pixels; y++) {
-				i = (y * pixels + x) * 4;
-				data[i + 1] = colormap(matrix[x][y], range);
-				data[i + 3] = 255;
+				var index = (y * pixels + x) * 4;
+        pixel = matrix[x][y];
+        // var color = 10 * colormap(matrix[x][y], range);
+        var color = 2 * smoothColorMap(iterations, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary)
+				data[index + 1] = color
+				data[index + 3] = 255;
 			}
 		}
 
@@ -131,24 +134,24 @@
 
 	full_mandelbrot(pixels, iterations);
 
-	canvas = document.getElementById("mandelbrot");
+	var canvas = document.getElementById("mandelbrot");
 	canvas.addEventListener("click", function (event) {
 		var center, click;
 
 		click = {x: event.offsetX, y: event.offsetY};
 
-		range_x = x_range[1] - x_range[0];
-		range_y = y_range[1] - y_range[0];
+		var range_x = x_range[1] - x_range[0];
+		var range_y = y_range[1] - y_range[0];
 
 		center = {}
-		center["x"] = (x_range[0] + x_range[1]) / 2;
-		center["y"] = (y_range[0] + y_range[1]) / 2;
+		center.x = (x_range[0] + x_range[1]) / 2;
+		center.y = (y_range[0] + y_range[1]) / 2;
 
-		top_left = {x: center.x - range_x / 2, y: center.y - range_y / 2};
+		var top_left = { x: center.x - range_x / 2, y: center.y - range_y / 2 };
 
-		zoom_x = top_left.x + click.x / pixels * range_x;
-		zoom_y = top_left.y + click.y / pixels * range_y;
-		zoom = {x: zoom_x, y: zoom_y};
+		var zoom_x = top_left.x + click.x / pixels * range_x;
+		var zoom_y = top_left.y + click.y / pixels * range_y;
+		var zoom = { x: zoom_x, y: zoom_y };
 
 		x_range = [zoom.x - range_x / 20, zoom.x + range_x / 20];
 		y_range = [zoom.y - range_y / 20, zoom.y + range_y / 20];
@@ -156,5 +159,19 @@
 		full_mandelbrot(pixels, iterations);
 
 	});
+
+  function smoothColorMap(steps, n, Tr, Ti) {
+    // Some constants used with smoothColor
+    var logBase = 1.0 / Math.log(2.0);
+    var logHalfBase = Math.log(0.5)*logBase;
+    /*
+     * Original smoothing equation is
+     *
+     * var v = 1 + n - Math.log(Math.log(Math.sqrt(Zr*Zr+Zi*Zi)))/Math.log(2.0);
+     *
+     * but can be simplified using some elementary logarithm rules to
+     */
+    return 5 + n - logHalfBase - Math.log(Math.log(Tr * Tr + Ti * Ti))*logBase;
+  }
 
 })(this);
