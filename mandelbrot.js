@@ -3,16 +3,16 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  var canvas, pixels, iterations, ctx, imageData, viewport;
+  var PIXELS = 512, ITERATIONS = 128;
+
+  var canvas, ctx, imageData, viewport;
 
   MDB.init = function () {
     canvas = document.getElementById("mandelbrot");
-    pixels = 512;
-    iterations = 128;
-    canvas.width = pixels;
-    canvas.height = pixels;
+    canvas.width = PIXELS;
+    canvas.height = PIXELS;
     ctx = canvas.getContext("2d");
-    imageData = new ImageData(pixels, pixels);
+    imageData = new ImageData(PIXELS, PIXELS);
     viewport = MDB.setViewport({
       x: {min: -2, max: 2},
       y: {min: -2, max: 2}
@@ -34,8 +34,8 @@
       y: viewport.y.max - viewport.y.min
     };
     viewport.delta = {
-      x: viewport.range.x / pixels,
-      y: viewport.range.y / pixels
+      x: viewport.range.x / PIXELS,
+      y: viewport.range.y / PIXELS
     };
     viewport.topLeft = {
       x: viewport.center.x - viewport.range.x / 2,
@@ -67,12 +67,12 @@
     return newPixel;
   };
 
-  MDB.full_mandelbrot = function (pixels, iterations) {
+  MDB.full_mandelbrot = function () {
     var iteration, pixel;
 
-    /* iterate over all of the pixels */
-    for (var x_index = 0; x_index < pixels; x_index++) {
-      for (var y_index = 0; y_index < pixels; y_index++) {
+    /* iterate over all of the PIXELS */
+    for (var x_index = 0; x_index < PIXELS; x_index++) {
+      for (var y_index = 0; y_index < PIXELS; y_index++) {
         var x = viewport.x.min + x_index * viewport.delta.x;
         var y = viewport.y.min + y_index * viewport.delta.y;
 
@@ -81,12 +81,12 @@
           z: {real: 0, imaginary: 0},
           crossoverIteration: null
         };
-        for (iteration = 0; iteration < iterations; iteration++) {
+        for (iteration = 0; iteration < ITERATIONS; iteration++) {
           pixel = MDB.mandelbrot(pixel, iteration);
         }
 
-        var index = (y_index * pixels + x_index) * 4;
-        var color = 2 * MDB.smoothColorMap(iterations, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary);
+        var index = (y_index * PIXELS + x_index) * 4;
+        var color = 2 * MDB.smoothColorMap(ITERATIONS, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary);
         imageData.data[index + 1] = 255;
         imageData.data[index + 3] = color;
       }
@@ -101,8 +101,8 @@
       var clickLocation = {x: event.offsetX, y: event.offsetY};
 
       var zoom_location = {
-        x: viewport.topLeft.x + clickLocation.x / pixels * viewport.range.x,
-        y: viewport.topLeft.y + clickLocation.y / pixels * viewport.range.y
+        x: viewport.topLeft.x + clickLocation.x / PIXELS * viewport.range.x,
+        y: viewport.topLeft.y + clickLocation.y / PIXELS * viewport.range.y
       };
 
       viewport = MDB.setViewport({
@@ -111,7 +111,7 @@
       })
 
       console.time('wat')
-      MDB.full_mandelbrot(pixels, iterations);
+      MDB.full_mandelbrot();
       console.timeEnd('wat')
     }); 
   }
@@ -128,7 +128,7 @@
 
   console.time('render timer')
   MDB.init()
-  MDB.full_mandelbrot(pixels, iterations);
+  MDB.full_mandelbrot(PIXELS, ITERATIONS);
   console.timeEnd('render timer')
 
 })(this);
