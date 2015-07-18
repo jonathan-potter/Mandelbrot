@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PIXELS = 512, ITERATIONS = 64, SUPER_SAMPLES = 4;
+  var PIXELS = 512, ITERATIONS = 512, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
@@ -101,18 +101,20 @@
 
     bindEvents: function () {
       this.canvas.addEventListener("click", function (event) {
-        var viewport = MDB.viewport
         var clickLocation = {x: event.offsetX, y: event.offsetY};
 
+        var viewport = MDB.viewport;
+        var range = viewport.range;
+        var topLeft = viewport.topLeft;
 
         var zoom_location = {
-          x: viewport.topLeft.x + clickLocation.x / PIXELS * viewport.range.x,
-          y: viewport.topLeft.y + clickLocation.y / PIXELS * viewport.range.y
+          x: topLeft.x + clickLocation.x / PIXELS * range.x,
+          y: topLeft.y + clickLocation.y / PIXELS * range.y
         };
 
         viewport = MDB.setViewport({
-          x: {min: zoom_location.x - viewport.range.x / 20, max: zoom_location.x + viewport.range.x / 20},
-          y: {min: zoom_location.y - viewport.range.y / 20, max: zoom_location.y + viewport.range.y / 20}
+          x: {min: zoom_location.x - range.x / 20, max: zoom_location.x + range.x / 20},
+          y: {min: zoom_location.y - range.y / 20, max: zoom_location.y + range.y / 20}
         })
 
         MDB.full_mandelbrot();
