@@ -2,8 +2,6 @@
 
 (function () {
   var PIXELS = 512, ITERATIONS = 128;
-  var LOG_BASE = 1.0 / Math.log(2.0);
-  var LOG_HALF_BASE = Math.log(0.5) * LOG_BASE;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
@@ -12,7 +10,7 @@
       MDB.canvas.width = PIXELS;
       MDB.canvas.height = PIXELS;
       MDB.ctx = this.canvas.getContext("2d");
-      MDB.imageData = new ImageData(PIXELS, PIXELS);
+      MDB.imageData = new ImageData(PIXELS, 1);
       MDB.setViewport({
         x: {min: -2, max: 2},
         y: {min: -2, max: 2}
@@ -74,8 +72,8 @@
       viewport = MDB.viewport;
 
       /* iterate over all of the PIXELS */
-      for (var x_index = 0; x_index < PIXELS; x_index++) {
-        for (var y_index = 0; y_index < PIXELS; y_index++) {
+      for (var y_index = 0; y_index < PIXELS; y_index++) {
+        for (var x_index = 0; x_index < PIXELS; x_index++) {
           var x = viewport.x.min + x_index * viewport.delta.x;
           var y = viewport.y.min + y_index * viewport.delta.y;
 
@@ -88,14 +86,15 @@
             pixel = MDB.mandelbrot(pixel, iteration);
           }
 
-          var index = (y_index * PIXELS + x_index) * 4;
-          var color = 2 * MDB.smoothColorMap(ITERATIONS, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary);
-          this.imageData.data[index + 1] = 255;
-          this.imageData.data[index + 3] = color;
+          var index = x_index * 4;
+          var color = 4 * MDB.smoothColorMap(ITERATIONS, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary);
+          MDB.imageData.data[index + 1] = 255;
+          MDB.imageData.data[index + 3] = color;
         }
+
+        MDB.ctx.putImageData(MDB.imageData, 0, y_index);
       }
 
-      this.ctx.putImageData(this.imageData, 0, 0);
       console.timeEnd('render timer');
     },
 
@@ -123,11 +122,11 @@
       /* credit to: Christian Stigen Larsen */
       /* https://github.com/cslarsen */
       /* https://github.com/cslarsen/mandelbrot-js/blob/master/mandelbrot.js */
-      return 5 + n - LOG_HALF_BASE - Math.log(Math.log(Zr * Zr + Zi * Zi))*LOG_BASE;
+      return n - Math.log(Math.log(Zr * Zr + Zi * Zi));
     }
   };
 
   MDB.init()
-  MDB.full_mandelbrot(PIXELS, ITERATIONS);
+  MDB.full_mandelbrot();
 
 })();
