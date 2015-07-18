@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PIXELS = 512, ITERATIONS = 512, SUPER_SAMPLES = 4;
+  var PIXELS = 512, iterations = 128, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
@@ -9,7 +9,7 @@
     init: function () {
       MDB.canvas.width = PIXELS;
       MDB.canvas.height = PIXELS;
-      MDB.ctx = this.canvas.getContext("2d");
+      MDB.ctx = MDB.canvas.getContext("2d");
       MDB.imageData = new ImageData(PIXELS, 1);
       MDB.setViewport({
         x: {min: -2, max: 2},
@@ -61,7 +61,7 @@
     },
 
     full_mandelbrot: function () {
-      var iteration, pixel, viewport;
+      var color, crossoverIteration, index, iteration, pixel, viewport, x, y;
       console.time('render timer');
 
       viewport = MDB.viewport;
@@ -70,25 +70,26 @@
       for (var y_index = 0; y_index < PIXELS; y_index++) {
         for (var x_index = 0; x_index < PIXELS; x_index++) {
 
-          var crossoverIteration = 0
+          crossoverIteration = 0
           for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
-            var x = viewport.x.min + (x_index + Math.random()) * viewport.delta.x;
-            var y = viewport.y.min + (y_index + Math.random()) * viewport.delta.y;
+            x = viewport.x.min + (x_index + Math.random()) * viewport.delta.x;
+            y = viewport.y.min + (y_index + Math.random()) * viewport.delta.y;
 
             pixel = {
               c: {real: x, imaginary: y},
               z: {real: 0, imaginary: 0},
               crossoverIteration: null
             };
-            for (iteration = 0; iteration < ITERATIONS && !pixel.crossoverIteration; iteration++) {
+            for (iteration = 0; iteration < iterations && !pixel.crossoverIteration; iteration++) {
               pixel = MDB.mandelbrot(pixel, iteration);
             }
 
             crossoverIteration += pixel.crossoverIteration
           }
 
-          var index = x_index * 4;
-          var color = 4 / SUPER_SAMPLES * crossoverIteration;
+          color = 4 / SUPER_SAMPLES * crossoverIteration;
+
+          index = x_index * 4;
           MDB.imageData.data[index + 1] = 255;
           MDB.imageData.data[index + 3] = color;
         }
@@ -100,7 +101,7 @@
     },
 
     bindEvents: function () {
-      this.canvas.addEventListener("click", function (event) {
+      MDB.canvas.addEventListener("click", function (event) {
         var clickLocation = {x: event.offsetX, y: event.offsetY};
 
         var viewport = MDB.viewport;
@@ -116,6 +117,8 @@
           x: {min: zoom_location.x - range.x / 20, max: zoom_location.x + range.x / 20},
           y: {min: zoom_location.y - range.y / 20, max: zoom_location.y + range.y / 20}
         })
+
+        iterations *= 2
 
         MDB.full_mandelbrot();
       }); 
