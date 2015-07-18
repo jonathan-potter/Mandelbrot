@@ -3,17 +3,47 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  var iterations, pixels, x_range, y_range;
+  var canvas, pixels, iterations, ctx, imageData, viewport;
 
-  var canvas = document.getElementById("mandelbrot");
-  x_range = [-2, 2];
-  y_range = [-2, 2];
-  pixels = 512;
-  iterations = 128;
-  canvas.width = pixels;
-  canvas.height = pixels;
-  var ctx = canvas.getContext("2d");
-  var imageData = new ImageData(pixels, pixels);
+  MDB.init = function () {
+    canvas = document.getElementById("mandelbrot");
+    pixels = 512;
+    iterations = 128;
+    canvas.width = pixels;
+    canvas.height = pixels;
+    ctx = canvas.getContext("2d");
+    imageData = new ImageData(pixels, pixels);
+    viewport = MDB.setViewport({
+      x: {min: -2, max: 2},
+      y: {min: -2, max: 2}
+    })
+    MDB.bindEvents();
+  }
+
+  MDB.setViewport = function (options) {
+    viewport = {
+      x: {min: options.x.min, max: options.x.max},
+      y: {min: options.y.min, max: options.y.max}
+    };
+    viewport.center = {
+      x: (viewport.x.max + viewport.x.min) / 2,
+      y: (viewport.y.max + viewport.y.min) / 2
+    };
+    viewport.range = {
+      x: viewport.x.max - viewport.x.min,
+      y: viewport.y.max - viewport.y.min
+    };
+    viewport.delta = {
+      x: viewport.range.x / pixels,
+      y: viewport.range.y / pixels
+    };
+    viewport.topLeft = {
+      x: viewport.center.x - viewport.range.x / 2,
+      y: viewport.center.y - viewport.range.x / 2
+    };
+
+    return viewport
+  }
 
   MDB.mandelbrot = function (pixel, iteration, override) {
     if (pixel.crossoverIteration && !override) { return pixel; }
@@ -38,19 +68,13 @@
   };
 
   MDB.full_mandelbrot = function (pixels, iterations) {
-    var delta_x, delta_y, iteration, pixel, range_x, range_y;
-
-    /* initial setup */
-    range_x = x_range[1] - x_range[0];
-    range_y = y_range[1] - y_range[0];
-    delta_x = range_x / pixels;
-    delta_y = range_y / pixels;
+    var iteration, pixel;
 
     /* iterate over all of the pixels */
     for (var x_index = 0; x_index < pixels; x_index++) {
       for (var y_index = 0; y_index < pixels; y_index++) {
-        var x = x_range[0] + x_index * delta_x;
-        var y = y_range[0] + y_index * delta_y;
+        var x = viewport.x.min + x_index * viewport.delta.x;
+        var y = viewport.y.min + y_index * viewport.delta.y;
 
         pixel = {
           c: {real: x, imaginary: y},
@@ -72,29 +96,25 @@
     console.log("done!");
   }
 
-  canvas.addEventListener("click", function (event) {
-    var click = {x: event.offsetX, y: event.offsetY};
+  MDB.bindEvents = function () {
+    canvas.addEventListener("click", function (event) {
+      var clickLocation = {x: event.offsetX, y: event.offsetY};
 
-    var range_x = x_range[1] - x_range[0];
-    var range_y = y_range[1] - y_range[0];
+      var zoom_location = {
+        x: viewport.topLeft.x + clickLocation.x / pixels * viewport.range.x,
+        y: viewport.topLeft.y + clickLocation.y / pixels * viewport.range.y
+      };
 
-    var center = {}
-    center.x = (x_range[0] + x_range[1]) / 2;
-    center.y = (y_range[0] + y_range[1]) / 2;
+      viewport = MDB.setViewport({
+        x: {min: zoom_location.x - viewport.range.x / 10, max: zoom_location.x + viewport.range.x / 10},
+        y: {min: zoom_location.y - viewport.range.y / 10, max: zoom_location.y + viewport.range.y / 10}
+      })
 
-    var top_left = { x: center.x - range_x / 2, y: center.y - range_y / 2 };
-
-    var zoom_x = top_left.x + click.x / pixels * range_x;
-    var zoom_y = top_left.y + click.y / pixels * range_y;
-    var zoom = { x: zoom_x, y: zoom_y };
-
-    x_range = [zoom.x - range_x / 20, zoom.x + range_x / 20];
-    y_range = [zoom.y - range_y / 20, zoom.y + range_y / 20];
-
-    console.time('wat')
-    MDB.full_mandelbrot(pixels, iterations);
-    console.timeEnd('wat')
-  });
+      console.time('wat')
+      MDB.full_mandelbrot(pixels, iterations);
+      console.timeEnd('wat')
+    }); 
+  }
 
     // Some constants used with smoothColor
   var LOG_BASE = 1.0 / Math.log(2.0);
@@ -107,6 +127,7 @@
   }
 
   console.time('render timer')
+  MDB.init()
   MDB.full_mandelbrot(pixels, iterations);
   console.timeEnd('render timer')
 
