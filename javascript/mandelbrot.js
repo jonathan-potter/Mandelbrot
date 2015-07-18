@@ -9,10 +9,10 @@
     canvas: document.getElementById("mandelbrot"),
 
     init: function () {
-      this.canvas.width = PIXELS;
-      this.canvas.height = PIXELS;
-      this.ctx = this.canvas.getContext("2d");
-      this.imageData = new ImageData(PIXELS, PIXELS);
+      MDB.canvas.width = PIXELS;
+      MDB.canvas.height = PIXELS;
+      MDB.ctx = this.canvas.getContext("2d");
+      MDB.imageData = new ImageData(PIXELS, PIXELS);
       MDB.setViewport({
         x: {min: -2, max: 2},
         y: {min: -2, max: 2}
@@ -69,6 +69,7 @@
 
     full_mandelbrot: function () {
       var iteration, pixel, viewport;
+      console.time('render timer');
 
       viewport = MDB.viewport;
 
@@ -95,7 +96,7 @@
       }
 
       this.ctx.putImageData(this.imageData, 0, 0);
-      console.log("done!");
+      console.timeEnd('render timer');
     },
 
     bindEvents: function () {
@@ -114,9 +115,7 @@
           y: {min: zoom_location.y - viewport.range.y / 20, max: zoom_location.y + viewport.range.y / 20}
         })
 
-        console.time('wat')
         MDB.full_mandelbrot();
-        console.timeEnd('wat')
       }); 
     },
 
@@ -128,9 +127,7 @@
     }
   };
 
-  console.time('render timer')
   MDB.init()
   MDB.full_mandelbrot(PIXELS, ITERATIONS);
-  console.timeEnd('render timer')
 
 })();
