@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PIXELS = 512, ITERATIONS = 128;
+  var PIXELS = 512, ITERATIONS = 64, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
@@ -43,8 +43,7 @@
       MDB.viewport = viewport;
     },
 
-    mandelbrot: function (pixel, iteration, override) {
-      if (pixel.crossoverIteration && !override) { return pixel; }
+    mandelbrot: function (pixel, iteration) {
       /** the base equation for the mandelbrot set is  **/
       /** f(z) = z^2 + c **/
 
@@ -54,12 +53,8 @@
       var imaginary = 2 * z.real * z.imaginary + c.imaginary;
 
       var newPixel = {c: c, z: {real: real, imaginary: imaginary}, crossoverIteration: pixel.crossoverIteration || null }
-      if (real * real + imaginary * imaginary > 4 && !override) {
+      if (real * real + imaginary * imaginary > 4) {
         newPixel.crossoverIteration = iteration;
-        
-        for (var i = 0; i < 4; i++) {
-          newPixel = MDB.mandelbrot(newPixel, null, true)
-        }
       }
 
       return newPixel;
@@ -74,20 +69,26 @@
       /* iterate over all of the PIXELS */
       for (var y_index = 0; y_index < PIXELS; y_index++) {
         for (var x_index = 0; x_index < PIXELS; x_index++) {
-          var x = viewport.x.min + x_index * viewport.delta.x;
-          var y = viewport.y.min + y_index * viewport.delta.y;
 
-          pixel = {
-            c: {real: x, imaginary: y},
-            z: {real: 0, imaginary: 0},
-            crossoverIteration: null
-          };
-          for (iteration = 0; iteration < ITERATIONS; iteration++) {
-            pixel = MDB.mandelbrot(pixel, iteration);
+          var crossoverIteration = 0
+          for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
+            var x = viewport.x.min + (x_index + Math.random()) * viewport.delta.x;
+            var y = viewport.y.min + (y_index + Math.random()) * viewport.delta.y;
+
+            pixel = {
+              c: {real: x, imaginary: y},
+              z: {real: 0, imaginary: 0},
+              crossoverIteration: null
+            };
+            for (iteration = 0; iteration < ITERATIONS && !pixel.crossoverIteration; iteration++) {
+              pixel = MDB.mandelbrot(pixel, iteration);
+            }
+
+            crossoverIteration += pixel.crossoverIteration
           }
 
           var index = x_index * 4;
-          var color = 4 * MDB.smoothColorMap(ITERATIONS, pixel.crossoverIteration, pixel.z.real, pixel.z.imaginary);
+          var color = 4 / SUPER_SAMPLES * crossoverIteration;
           MDB.imageData.data[index + 1] = 255;
           MDB.imageData.data[index + 3] = color;
         }
@@ -116,13 +117,6 @@
 
         MDB.full_mandelbrot();
       }); 
-    },
-
-    smoothColorMap: function(steps, n, Zr, Zi) {
-      /* credit to: Christian Stigen Larsen */
-      /* https://github.com/cslarsen */
-      /* https://github.com/cslarsen/mandelbrot-js/blob/master/mandelbrot.js */
-      return n - Math.log(Math.log(Zr * Zr + Zi * Zi));
     }
   };
 
