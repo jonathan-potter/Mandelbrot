@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var PIXELS = 512, iterations = 128, SUPER_SAMPLES = 4;
+  var PIXELS = 512, iterations = 32, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
