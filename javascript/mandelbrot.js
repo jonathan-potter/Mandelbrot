@@ -10,7 +10,7 @@
       MDB.canvas.width = PIXELS;
       MDB.canvas.height = PIXELS;
       MDB.ctx = MDB.canvas.getContext("2d");
-      MDB.imageData = new ImageData(PIXELS, 1);
+      MDB.imageData = new ImageData(PIXELS, PIXELS);
       MDB.setViewport({
         x: {min: -2, max: 2},
         y: {min: -2, max: 2}
@@ -61,14 +61,13 @@
     },
 
     full_mandelbrot: function () {
-      var color, crossoverIteration, index, iteration, pixel, viewport, x, y;
+      var color, crossoverIteration, dataIndex, iteration, pixel, viewport, x, y;
       console.time('render timer');
 
       viewport = MDB.viewport;
 
-      /* iterate over all of the PIXELS */
-      for (var y_index = 0; y_index < PIXELS; y_index++) {
-        for (var x_index = 0; x_index < PIXELS; x_index++) {
+      for (var x_index = 0; x_index < PIXELS; x_index++) {
+        for (var y_index = 0; y_index < PIXELS; y_index++) {
 
           crossoverIteration = 0
           for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
@@ -89,14 +88,13 @@
 
           color = 4 / SUPER_SAMPLES * crossoverIteration;
 
-          index = x_index * 4;
-          MDB.imageData.data[index + 1] = 255;
-          MDB.imageData.data[index + 3] = color;
+          dataIndex = (y_index * PIXELS + x_index) * 4;
+          MDB.imageData.data[dataIndex + 1] = 255;
+          MDB.imageData.data[dataIndex + 3] = color;
         }
-
-        MDB.ctx.putImageData(MDB.imageData, 0, y_index);
       }
 
+      MDB.ctx.putImageData(MDB.imageData, 0, 0);
       console.timeEnd('render timer');
     },
 
