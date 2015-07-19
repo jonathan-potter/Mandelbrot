@@ -1,11 +1,37 @@
 <html>
-	<head>
-		<meta name="viewport" content="initial-scale=1">
-		<link rel="stylesheet" href="css/mandelbrot.css">
-	</head>
-	<body>
-		<canvas id="mandelbrot" width="400" height="400"></canvas>
+  <head>
+    <meta name="viewport" content="initial-scale=1">
+    <link rel='stylesheet' href='dependencies/skeleton/css/normalize.css'></link>
+    <link rel='stylesheet' href='dependencies/skeleton/css/skeleton.css'></link>
+    <link rel="stylesheet" href="css/mandelbrot.css">
+    <link rel="stylesheet" href="css/header.css">
+  </head>
+  <body>
+    <header>
+      <div class='container'>
+        <heading>Mandelbrot Set</heading>
+        <nav class='right'>
+          <ul>
+            <li>
+              <a href="http://github.com/jonathan-potter/Mandelbrot" title="Github repo">
+                <img src="assets/images/GitHub-Mark-32px.png" class="link-square"></img>
+              </a>
+            </li>
+            <li>
+              <a href="https://en.wikipedia.org/wiki/Mandelbrot_set" title="Wikipedia: Mandelbrot">
+                <img src="assets/images/Wikipedia-icon.svg.png" class="link-square"></img>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <section>
+      <div class='container'>
+    		<canvas id="mandelbrot" width="400" height="400"></canvas>
+    	</div>
+    </section>
 
-		<script src="javascript/mandelbrot.js"></script>
-	</body>
+    <script src="javascript/mandelbrot.js"></script>
+  </body>
 </html>
