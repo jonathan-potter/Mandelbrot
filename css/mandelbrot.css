@@ -18,4 +18,5 @@ section > .container {
 
 #mandelbrot {
   margin: auto;
+  max-width: 80%;
 }
