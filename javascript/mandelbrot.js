@@ -62,18 +62,19 @@
     },
 
     full_mandelbrot: function () {
-      var color, crossoverIteration, dataIndex, iteration, pixel, viewport, x, y;
+      var color, crossoverIteration, dataIndex, dx, dy, iteration, pixel, viewport, x, y;
       console.time('render timer');
 
-      viewport = MDB.viewport;
+      dx = MDB.viewport.delta.x;
+      dy = MDB.viewport.delta.y;
 
       for (var x_index = 0; x_index < pixels; x_index++) {
         for (var y_index = 0; y_index < pixels; y_index++) {
 
           crossoverIteration = 0
           for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
-            x = viewport.x.min + (x_index + Math.random()) * viewport.delta.x;
-            y = viewport.y.min + (y_index + Math.random()) * viewport.delta.y;
+            x = MDB.viewport.x.min + (x_index + Math.random()) * dx;
+            y = MDB.viewport.y.min + (y_index + Math.random()) * dy;
 
             pixel = {
               c: {real: x, imaginary: y},
