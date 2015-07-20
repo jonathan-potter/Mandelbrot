@@ -1,16 +1,17 @@
 'use strict';
 
 (function () {
-  var PIXELS = 512, iterations = 32, SUPER_SAMPLES = 4;
+  var iterations = 32, pixels, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
 
     init: function () {
-      MDB.canvas.width = PIXELS;
-      MDB.canvas.height = PIXELS;
+      pixels = MDB.canvas.offsetWidth
+      MDB.canvas.width = pixels;
+      MDB.canvas.height = pixels;
       MDB.ctx = MDB.canvas.getContext("2d");
-      MDB.imageData = new ImageData(PIXELS, PIXELS);
+      MDB.imageData = new ImageData(pixels, pixels);
       MDB.setViewport({
         x: {min: -2, max: 2},
         y: {min: -2, max: 2}
@@ -32,8 +33,8 @@
         y: viewport.y.max - viewport.y.min
       };
       viewport.delta = {
-        x: viewport.range.x / PIXELS,
-        y: viewport.range.y / PIXELS
+        x: viewport.range.x / pixels,
+        y: viewport.range.y / pixels
       };
       viewport.topLeft = {
         x: viewport.center.x - viewport.range.x / 2,
@@ -66,8 +67,8 @@
 
       viewport = MDB.viewport;
 
-      for (var x_index = 0; x_index < PIXELS; x_index++) {
-        for (var y_index = 0; y_index < PIXELS; y_index++) {
+      for (var x_index = 0; x_index < pixels; x_index++) {
+        for (var y_index = 0; y_index < pixels; y_index++) {
 
           crossoverIteration = 0
           for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
@@ -88,7 +89,7 @@
 
           color = 4 / SUPER_SAMPLES * crossoverIteration;
 
-          dataIndex = (y_index * PIXELS + x_index) * 4;
+          dataIndex = (y_index * pixels + x_index) * 4;
           MDB.imageData.data[dataIndex + 1] = 255;
           MDB.imageData.data[dataIndex + 3] = color;
         }
@@ -100,18 +101,15 @@
 
     bindEvents: function () {
       MDB.canvas.addEventListener("click", function (event) {
-        var clickLocation = {x: event.offsetX, y: event.offsetY};
-
-        var viewport = MDB.viewport;
-        var range = viewport.range;
-        var topLeft = viewport.topLeft;
+        var range = MDB.viewport.range;
+        var topLeft = MDB.viewport.topLeft;
 
         var zoom_location = {
-          x: topLeft.x + clickLocation.x / PIXELS * range.x,
-          y: topLeft.y + clickLocation.y / PIXELS * range.y
+          x: topLeft.x + range.x * event.offsetX / event.currentTarget.offsetWidth,
+          y: topLeft.y + range.y * event.offsetY / event.currentTarget.offsetHeight
         };
 
-        viewport = MDB.setViewport({
+        MDB.setViewport({
           x: {min: zoom_location.x - range.x / 20, max: zoom_location.x + range.x / 20},
           y: {min: zoom_location.y - range.y / 20, max: zoom_location.y + range.y / 20}
         })
