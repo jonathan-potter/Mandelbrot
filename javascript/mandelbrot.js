@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var iterations = 32, pixels, SUPER_SAMPLES = 4;
+  var iterations = 128, pixels, SUPER_SAMPLES = 4;
 
   var MDB = {
     canvas: document.getElementById("mandelbrot"),
@@ -45,6 +45,7 @@
     },
 
     mandelbrot: function (pixel, iteration) {
+      if (iteration >= iterations) { return 0 }
       /** the base equation for the mandelbrot set is  **/
       /** f(z) = z^2 + c **/
 
@@ -53,46 +54,43 @@
       var real = z.real * z.real - z.imaginary * z.imaginary + c.real;
       var imaginary = 2 * z.real * z.imaginary + c.imaginary;
 
-      var newPixel = {c: c, z: {real: real, imaginary: imaginary}, crossoverIteration: pixel.crossoverIteration || null }
+      pixel.z.real = real;
+      pixel.z.imaginary = imaginary;
+
       if (real * real + imaginary * imaginary > 4) {
-        newPixel.crossoverIteration = iteration;
+        return iteration;
       }
 
-      return newPixel;
+      return MDB.mandelbrot(pixel, ++iteration || 0);
     },
 
     full_mandelbrot: function () {
-      var color, crossoverIteration, dataIndex, dx, dy, iteration, pixel, viewport, x, y;
+      var color, crossoverIteration, dataIndex, sample, x, y;
       console.time('render timer');
 
-      dx = MDB.viewport.delta.x;
-      dy = MDB.viewport.delta.y;
+      var dx = MDB.viewport.delta.x;
+      var dy = MDB.viewport.delta.y;
+      
+      dataIndex = 0
+      for (var y_index = 0; y_index < pixels; y_index++) {
+        for (var x_index = 0; x_index < pixels; x_index++) {
 
-      for (var x_index = 0; x_index < pixels; x_index++) {
-        for (var y_index = 0; y_index < pixels; y_index++) {
-
-          crossoverIteration = 0
-          for (var sample = 0; sample < SUPER_SAMPLES; sample ++) {
+          crossoverIteration = 0;
+          for (sample = 0; sample < SUPER_SAMPLES; sample++) {
             x = MDB.viewport.x.min + (x_index + Math.random()) * dx;
             y = MDB.viewport.y.min + (y_index + Math.random()) * dy;
 
-            pixel = {
+            crossoverIteration += MDB.mandelbrot({
               c: {real: x, imaginary: y},
-              z: {real: 0, imaginary: 0},
-              crossoverIteration: null
-            };
-            for (iteration = 0; iteration < iterations && !pixel.crossoverIteration; iteration++) {
-              pixel = MDB.mandelbrot(pixel, iteration);
-            }
-
-            crossoverIteration += pixel.crossoverIteration
+              z: {real: 0, imaginary: 0}
+            });
           }
 
           color = 4 / SUPER_SAMPLES * crossoverIteration;
 
-          dataIndex = (y_index * pixels + x_index) * 4;
           MDB.imageData.data[dataIndex + 1] = 255;
           MDB.imageData.data[dataIndex + 3] = color;
+          dataIndex += 4;
         }
       }
 
@@ -111,8 +109,14 @@
         };
 
         MDB.setViewport({
-          x: {min: zoom_location.x - range.x / 20, max: zoom_location.x + range.x / 20},
-          y: {min: zoom_location.y - range.y / 20, max: zoom_location.y + range.y / 20}
+          x: {
+            min: zoom_location.x - range.x / 20,
+            max: zoom_location.x + range.x / 20
+          },
+          y: {
+            min: zoom_location.y - range.y / 20,
+            max: zoom_location.y + range.y / 20
+          }
         })
 
         iterations *= 2
