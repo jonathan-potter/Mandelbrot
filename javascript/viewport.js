@@ -29,6 +29,38 @@
         x: this.center().x - this.range().x / 2,
         y: this.center().y - this.range().x / 2
       };
+    },
+    clickLocation: function (event) {
+      var range = this.range();
+      var topLeft = this.topLeft();
+
+      return {
+        x: topLeft.x + range.x * event.offsetX / event.currentTarget.offsetWidth,
+        y: topLeft.y + range.y * event.offsetY / event.currentTarget.offsetHeight
+      };
+    },
+    zoomToLocation: function (location) {
+      var range = this.range();
+
+      this.x = {
+        min: location.x - range.x / 20,
+        max: location.x + range.x / 20
+      };
+      this.y = {
+        min: location.y - range.y / 20,
+        max: location.y + range.y / 20
+      };
+    },
+    bindToCanvas: function (canvas, renderCallback) {
+      var self = this;
+
+      canvas.addEventListener('click', function (event) {
+        var clickLocation = self.clickLocation(event);
+        
+        self.zoomToLocation(clickLocation);
+
+        renderCallback();
+      })
     }
   };
 
@@ -40,4 +72,5 @@
 
     return viewport
   };
+
 })(this);

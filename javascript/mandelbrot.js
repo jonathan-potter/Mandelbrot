@@ -18,7 +18,7 @@
       y: {min: -2, max: 2}
     });
 
-    MDB.bindEvents();
+    MDB.viewport.bindToCanvas(MDB.canvas, MDB.render);
   },
 
   MDB.mandelbrot = function (pixel, iteration) {
@@ -38,7 +38,7 @@
       return iteration;
     }
 
-    return MDB.mandelbrot(pixel, ++iteration || 0);
+    return MDB.mandelbrot(pixel, ++iteration || 1);
   },
 
   MDB.render = function () {
@@ -73,33 +73,6 @@
 
     MDB.ctx.putImageData(MDB.imageData, 0, 0);
     console.timeEnd('render timer');
-  },
-
-  MDB.bindEvents = function () {
-    MDB.canvas.addEventListener("click", function (event) {
-      var range = MDB.viewport.range();
-      var topLeft = MDB.viewport.topLeft();
-
-      var zoom_location = {
-        x: topLeft.x + range.x * event.offsetX / event.currentTarget.offsetWidth,
-        y: topLeft.y + range.y * event.offsetY / event.currentTarget.offsetHeight
-      };
-
-      MDB.viewport = MDB.Viewport({
-        x: {
-          min: zoom_location.x - range.x / 20,
-          max: zoom_location.x + range.x / 20
-        },
-        y: {
-          min: zoom_location.y - range.y / 20,
-          max: zoom_location.y + range.y / 20
-        }
-      });
-
-      iterations *= 2;
-
-      MDB.render();
-    }); 
-  };
+  }
 
 })(this);
