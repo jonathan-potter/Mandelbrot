@@ -14,8 +14,8 @@
     MDB.ctx = MDB.canvas.getContext("2d");
     MDB.imageData = new ImageData(pixels, pixels);
     MDB.viewport = MDB.Viewport({
-      x: {min: -2, max: 2},
-      y: {min: -2, max: 2}
+      x: {min: -2, max: 0.5},
+      y: {min: -1.25, max: 1.25}
     });
 
     MDB.viewport.bindToCanvas(MDB.canvas, MDB.render);

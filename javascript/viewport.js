@@ -56,7 +56,7 @@
 
       canvas.addEventListener('click', function (event) {
         var clickLocation = self.clickLocation(event);
-        
+
         self.zoomToLocation(clickLocation);
 
         renderCallback();
