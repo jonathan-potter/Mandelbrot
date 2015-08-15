@@ -63,7 +63,7 @@
           }, 0);
         }
 
-        color = 4 / SUPER_SAMPLES * crossoverIteration;
+        color = 1 / SUPER_SAMPLES * crossoverIteration;
 
         MDB.imageData.data[dataIndex + 1] = 255;
         MDB.imageData.data[dataIndex + 3] = color;
