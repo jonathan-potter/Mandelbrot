@@ -47,9 +47,14 @@
 
     var dx = MDB.viewport.delta().x;
     var dy = MDB.viewport.delta().y;
-    
-    dataIndex = 0
-    for (var y_index = 0; y_index < pixels; y_index++) {
+
+    var singleLineImageDate = new ImageData(pixels, 1);
+    var lastUpdate = (new Date).getTime();
+    var y_index = 0
+
+    var scanLine = function (y_index) {
+      var y_index = y_index || 0;
+      var dataIndex = 0;
       for (var x_index = 0; x_index < pixels; x_index++) {
 
         crossoverIteration = 0;
@@ -65,14 +70,33 @@
 
         color = 1 / SUPER_SAMPLES * crossoverIteration;
 
-        MDB.imageData.data[dataIndex + 1] = 255;
-        MDB.imageData.data[dataIndex + 3] = color;
+        singleLineImageDate.data[dataIndex + 0] = 255;
+        singleLineImageDate.data[dataIndex + 1] = 255;
+        singleLineImageDate.data[dataIndex + 2] = 255;
+        singleLineImageDate.data[dataIndex + 3] = color;
         dataIndex += 4;
       }
-    }
+      MDB.ctx.putImageData(singleLineImageDate, 0, y_index);  
 
-    MDB.ctx.putImageData(MDB.imageData, 0, 0);
-    console.timeEnd('render timer');
+      /* thanks to cslarsen */
+      /* https://github.com/cslarsen/mandelbrot-js */
+      /* allow the screen to refresh after a given period */
+      if (y_index < MDB.PIXELS) {
+        var now = (new Date).getTime();
+        if ((now - lastUpdate) >= 1000.0 / 10.0) {
+          lastUpdate = now;
+          setTimeout(function () {
+            scanLine(++y_index)
+          }, 0);
+        } else {
+          scanLine(++y_index)
+        }
+      } else {
+        console.timeEnd('render timer');
+      }
+    }
+    scanLine();
+
   }
 
 })(this);
