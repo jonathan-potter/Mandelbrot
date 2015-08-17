@@ -8,6 +8,7 @@
   MDB.canvas = document.getElementById("mandelbrot"),
 
   MDB.init = function () {
+    MDB.activelyRendering = false;
     MDB.WIDTH = MDB.canvas.offsetWidth;
     MDB.HEIGHT = MDB.canvas.offsetHeight;
     MDB.canvas.width = MDB.WIDTH;
@@ -42,6 +43,7 @@
   },
 
   MDB.render = function () {
+    MDB.activelyRendering = true;
     console.log(MDB.viewport.x, MDB.viewport.y);
     var color, crossoverIteration, dataIndex, x, y;
     console.time('render timer');
@@ -93,6 +95,7 @@
           scanLine(++y_index)
         }
       } else {
+        MDB.activelyRendering = false;
         console.timeEnd('render timer');
       }
     }

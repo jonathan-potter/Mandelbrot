@@ -73,13 +73,15 @@
 
       self.canvas = canvas
       self.canvas.addEventListener('click', function (event) {
-        var canvasClickLocation    = self.canvasClickLocation(event);
-        var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
+        if (!MDB.activelyRendering) {
+          var canvasClickLocation    = self.canvasClickLocation(event);
+          var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
 
-        self.highlightZoomBox(canvasClickLocation);
-        self.zoomToLocation(cartesianClickLocation);
+          self.highlightZoomBox(canvasClickLocation);
+          self.zoomToLocation(cartesianClickLocation);
 
-        setTimeout(renderCallback, 0);
+          setTimeout(renderCallback, 0);
+        }
       })
     },
     highlightZoomBox: function (location) {
