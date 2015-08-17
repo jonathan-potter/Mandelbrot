@@ -13,6 +13,8 @@ header {
 
 header * {
   margin: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 heading {
