@@ -23,14 +23,14 @@
     },
     delta: function () {
       return {
-        x: this.range().x / MDB.PIXELS,
-        y: this.range().y / MDB.PIXELS
+        x: this.range().x / MDB.WIDTH,
+        y: this.range().y / MDB.HEIGHT
       };
     },
     topLeft: function () {
       return {
         x: this.center().x - this.range().x / 2,
-        y: this.center().y - this.range().x / 2
+        y: this.center().y - this.range().y / 2
       };
     },
     canvasSize: function () {
@@ -98,6 +98,33 @@
       );
 
       context.stroke();
+    },
+    growToAspectRatio: function () {
+      var aspectRatio = MDB.WIDTH / MDB.HEIGHT;
+
+      var range = this.range();
+      var center = this.center();
+      var currentAspectRatio = range.x / range.y;
+
+      if (currentAspectRatio > aspectRatio) { // height needs expansion
+        var distanceFromCenter = {
+          min: (this.y.min - center.y),
+          max: (this.y.max - center.y)
+        };
+
+        this.y.min = center.y + distanceFromCenter.min * (currentAspectRatio / aspectRatio);
+        this.y.max = center.y - distanceFromCenter.min * (currentAspectRatio / aspectRatio);
+      } else { // width needs expansion
+        var distanceFromCenter = {
+          min: (this.x.min - center.x),
+          max: (this.x.max - center.x)
+        };
+
+        this.x.min = center.x + distanceFromCenter.min * (aspectRatio / currentAspectRatio);
+        this.x.max = center.x - distanceFromCenter.min * (aspectRatio / currentAspectRatio);
+      }
+
+      return this;
     }
   };
 
@@ -107,7 +134,7 @@
     viewport.x = bounds.x;
     viewport.y = bounds.y;
 
-    return viewport
+    return viewport.growToAspectRatio();
   };
 
 })(this);

@@ -3,16 +3,16 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  var iterations = 256, pixels, SUPER_SAMPLES = 1;
+  var iterations = 256, SUPER_SAMPLES = 1;
 
   MDB.canvas = document.getElementById("mandelbrot"),
 
   MDB.init = function () {
-    MDB.PIXELS = pixels = MDB.canvas.offsetWidth;
-    MDB.canvas.width = pixels;
-    MDB.canvas.height = pixels;
+    MDB.WIDTH = MDB.canvas.offsetWidth;
+    MDB.HEIGHT = MDB.canvas.offsetHeight;
+    MDB.canvas.width = MDB.WIDTH;
+    MDB.canvas.height = MDB.HEIGHT;
     MDB.ctx = MDB.canvas.getContext("2d");
-    MDB.imageData = new ImageData(pixels, pixels);
     MDB.viewport = MDB.Viewport({
       x: {min: -2, max: 0.5},
       y: {min: -1.25, max: 1.25}
@@ -42,20 +42,21 @@
   },
 
   MDB.render = function () {
+    console.log(MDB.viewport.x, MDB.viewport.y);
     var color, crossoverIteration, dataIndex, x, y;
     console.time('render timer');
 
     var dx = MDB.viewport.delta().x;
     var dy = MDB.viewport.delta().y;
 
-    var singleLineImageDate = new ImageData(pixels, 1);
+    var singleLineImageDate = new ImageData(MDB.WIDTH, 1);
     var lastUpdate = (new Date).getTime();
     var y_index = 0
 
     var scanLine = function (y_index) {
       var y_index = y_index || 0;
       var dataIndex = 0;
-      for (var x_index = 0; x_index < pixels; x_index++) {
+      for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
 
         crossoverIteration = 0;
         for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
@@ -81,7 +82,7 @@
       /* thanks to cslarsen */
       /* https://github.com/cslarsen/mandelbrot-js */
       /* allow the screen to refresh after a given period */
-      if (y_index < MDB.PIXELS) {
+      if (y_index < MDB.HEIGHT) {
         var now = (new Date).getTime();
         if ((now - lastUpdate) >= 1000.0 / 10.0) {
           lastUpdate = now;
