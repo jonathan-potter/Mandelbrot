@@ -3,7 +3,10 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  var iterations = 256, SUPER_SAMPLES = 1;
+  var query = MDB.parseQuery(window.location.search);
+
+  var iterations = 256
+  var SUPER_SAMPLES = query.super_samples || 1;
 
   MDB.canvas = document.getElementById("mandelbrot"),
 
