@@ -5,7 +5,7 @@
 
   var query = MDB.parseQuery(window.location.search);
 
-  var iterations = 256
+  var iterations = 256;
   var SUPER_SAMPLES = query.super_samples || 1;
 
   MDB.canvas = document.getElementById("mandelbrot"),
@@ -26,7 +26,7 @@
   },
 
   MDB.mandelbrot = function (pixel, iteration) {
-    if (iteration >= iterations) { return 0 }
+    if (iteration >= iterations) { return 0; }
     /** the base equation for the mandelbrot set is  **/
     /** f(z) = z^2 + c **/
 
@@ -47,26 +47,23 @@
 
   MDB.render = function () {
     MDB.activelyRendering = true;
-    console.log(MDB.viewport.x, MDB.viewport.y);
-    var color, crossoverIteration, dataIndex, x, y;
     console.time('render timer');
 
     var dx = MDB.viewport.delta().x;
     var dy = MDB.viewport.delta().y;
 
     var singleLineImageDate = new ImageData(MDB.WIDTH, 1);
-    var lastUpdate = (new Date).getTime();
-    var y_index = 0
+    var lastUpdate = (new Date()).getTime();
 
     var scanLine = function (y_index) {
-      var y_index = y_index || 0;
+      y_index = y_index || 0;
       var dataIndex = 0;
       for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
 
-        crossoverIteration = 0;
+        var crossoverIteration = 0;
         for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
-          x = MDB.viewport.x.min + (x_index + Math.random()) * dx;
-          y = MDB.viewport.y.min + (y_index + Math.random()) * dy;
+          var x = MDB.viewport.x.min + (x_index + Math.random()) * dx;
+          var y = MDB.viewport.y.min + (y_index + Math.random()) * dy;
 
           crossoverIteration += MDB.mandelbrot({
             c: {real: x, imaginary: y},
@@ -74,7 +71,7 @@
           }, 0);
         }
 
-        color = 1 / SUPER_SAMPLES * crossoverIteration;
+        var color = 1 / SUPER_SAMPLES * crossoverIteration;
 
         singleLineImageDate.data[dataIndex + 0] = 255;
         singleLineImageDate.data[dataIndex + 1] = 255;
@@ -88,22 +85,22 @@
       /* https://github.com/cslarsen/mandelbrot-js */
       /* allow the screen to refresh after a given period */
       if (y_index < MDB.HEIGHT) {
-        var now = (new Date).getTime();
+        var now = (new Date()).getTime();
         if ((now - lastUpdate) >= 1000.0 / 10.0) {
           lastUpdate = now;
           setTimeout(function () {
-            scanLine(++y_index)
+            scanLine(++y_index);
           }, 0);
         } else {
-          scanLine(++y_index)
+          scanLine(++y_index);
         }
       } else {
         MDB.activelyRendering = false;
         console.timeEnd('render timer');
       }
-    }
+    };
     scanLine();
 
-  }
+  };
 
 })(this);
