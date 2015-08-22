@@ -7,22 +7,22 @@
   var ZOOM_SIZE = 0.1;
 
   var VIEWPORT_PROTOTYPE = {
-    x: {min: 0, max: 0},
-    y: {min: 0, max: 0},
+    xBounds: {min: 0, max: 0},
+    yBounds: {min: 0, max: 0},
     setBounds: function (bounds) {
-      this.x = bounds.x;
-      this.y = bounds.y;
+      this.xBounds = bounds.x;
+      this.yBounds = bounds.y;
     },
     center: function () {
       return {
-        x: (this.x.max + this.x.min) / 2,
-        y: (this.y.max + this.y.min) / 2
+        x: (this.xBounds.max + this.xBounds.min) / 2,
+        y: (this.yBounds.max + this.yBounds.min) / 2
       };
     },
     range: function () {
       return {
-        x: this.x.max - this.x.min,
-        y: this.y.max - this.y.min
+        x: this.xBounds.max - this.xBounds.min,
+        y: this.yBounds.max - this.yBounds.min
       };
     },
     delta: function () {
@@ -63,14 +63,16 @@
     zoomToLocation: function (location) {
       var range = this.range();
 
-      this.x = {
-        min: location.x - (range.x * ZOOM_SIZE * 0.5),
-        max: location.x + (range.x * ZOOM_SIZE * 0.5)
-      };
-      this.y = {
-        min: location.y - (range.y * ZOOM_SIZE * 0.5),
-        max: location.y + (range.y * ZOOM_SIZE * 0.5)
-      };
+      this.setBounds({
+        x: {
+          min: location.x - (range.x * ZOOM_SIZE * 0.5),
+          max: location.x + (range.x * ZOOM_SIZE * 0.5)
+        },
+        y: {
+          min: location.y - (range.y * ZOOM_SIZE * 0.5),
+          max: location.y + (range.y * ZOOM_SIZE * 0.5)
+        }
+      });
     },
     bindToCanvas: function (canvas, renderCallback) {
       var self = this;
@@ -113,13 +115,13 @@
       var currentAspectRatio = range.x / range.y;
 
       var distanceFromCenter;
-      var xBounds = this.x;
-      var yBounds = this.y;
+      var xBounds = this.xBounds;
+      var yBounds = this.yBounds;
       if (currentAspectRatio > aspectRatio) {
         /* height needs expansion */
         distanceFromCenter = {
-          min: (this.y.min - center.y),
-          max: (this.y.max - center.y)
+          min: (xBounds.min - center.y),
+          max: (yBounds.max - center.y)
         };
 
         yBounds = {
@@ -129,8 +131,8 @@
       } else {
         /* width needs expansion */
         distanceFromCenter = {
-          min: (this.x.min - center.x),
-          max: (this.x.max - center.x)
+          min: (xBounds.min - center.x),
+          max: (xBounds.max - center.x)
         };
 
         xBounds = {
@@ -143,16 +145,16 @@
         x: xBounds,
         y: yBounds
       });
-
-      return this;
     }
   };
 
   MDB.Viewport = function (bounds) {
     var viewport = Object.create(VIEWPORT_PROTOTYPE);
-    viewport.setBounds(bounds);
 
-    return viewport.growToAspectRatio();
+    viewport.setBounds(bounds);
+    viewport.growToAspectRatio();
+
+    return  viewport;
   };
 
 })(this);

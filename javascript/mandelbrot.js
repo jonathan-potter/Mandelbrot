@@ -66,18 +66,20 @@
 
     var scanLine = function (y_index) {
       y_index = y_index || 0;
+
+      var topLeft = MDB.viewport.topLeft();
       var dataIndex = 0;
       for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
 
         var crossoverIteration = 0;
         for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
-          var x = MDB.viewport.x.min + (x_index + Math.random()) * dx;
-          var y = MDB.viewport.y.min + (y_index + Math.random()) * dy;
+          var x = topLeft.x + (x_index + Math.random()) * dx;
+          var y = topLeft.y + (y_index + Math.random()) * dy;
 
           crossoverIteration += MDB.mandelbrot({
             c: {real: x, imaginary: y},
             z: {real: 0, imaginary: 0}
-          }, 0);
+          });
         }
 
         var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
