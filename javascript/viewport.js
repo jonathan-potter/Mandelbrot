@@ -9,6 +9,10 @@
   var VIEWPORT_PROTOTYPE = {
     x: {min: 0, max: 0},
     y: {min: 0, max: 0},
+    setBounds: function (bounds) {
+      this.x = bounds.x;
+      this.y = bounds.y;
+    },
     center: function () {
       return {
         x: (this.x.max + this.x.min) / 2,
@@ -37,10 +41,10 @@
       return {
         x: this.canvas.offsetWidth,
         y: this.canvas.offsetHeight
-      }
+      };
     },
     canvasClickLocation: function (event) {
-      var currentCanvasSize = this.canvasSize()
+      var currentCanvasSize = this.canvasSize();
 
       return {
         x: event.offsetX / currentCanvasSize.x * this.canvas.width,
@@ -71,7 +75,7 @@
     bindToCanvas: function (canvas, renderCallback) {
       var self = this;
 
-      self.canvas = canvas
+      self.canvas = canvas;
       self.canvas.addEventListener('click', function (event) {
         if (!MDB.activelyRendering) {
           var canvasClickLocation    = self.canvasClickLocation(event);
@@ -82,7 +86,7 @@
 
           setTimeout(renderCallback, 0);
         }
-      })
+      });
     },
     highlightZoomBox: function (location) {
       var context = this.canvas.getContext('2d');
@@ -108,23 +112,37 @@
       var center = this.center();
       var currentAspectRatio = range.x / range.y;
 
-      if (currentAspectRatio > aspectRatio) { // height needs expansion
-        var distanceFromCenter = {
+      var distanceFromCenter;
+      var xBounds = this.x;
+      var yBounds = this.y;
+      if (currentAspectRatio > aspectRatio) {
+        /* height needs expansion */
+        distanceFromCenter = {
           min: (this.y.min - center.y),
           max: (this.y.max - center.y)
         };
 
-        this.y.min = center.y + distanceFromCenter.min * (currentAspectRatio / aspectRatio);
-        this.y.max = center.y - distanceFromCenter.min * (currentAspectRatio / aspectRatio);
-      } else { // width needs expansion
-        var distanceFromCenter = {
+        yBounds = {
+          min: center.y + distanceFromCenter.min * (currentAspectRatio / aspectRatio),
+          max: center.y - distanceFromCenter.min * (currentAspectRatio / aspectRatio)
+        };
+      } else {
+        /* width needs expansion */
+        distanceFromCenter = {
           min: (this.x.min - center.x),
           max: (this.x.max - center.x)
         };
 
-        this.x.min = center.x + distanceFromCenter.min * (aspectRatio / currentAspectRatio);
-        this.x.max = center.x - distanceFromCenter.min * (aspectRatio / currentAspectRatio);
+        xBounds = {
+          min: center.x + distanceFromCenter.min * (aspectRatio / currentAspectRatio),
+          max: center.x - distanceFromCenter.min * (aspectRatio / currentAspectRatio)
+        };
       }
+
+      this.setBounds({
+        x: xBounds,
+        y: yBounds
+      });
 
       return this;
     }
@@ -132,9 +150,7 @@
 
   MDB.Viewport = function (bounds) {
     var viewport = Object.create(VIEWPORT_PROTOTYPE);
-
-    viewport.x = bounds.x;
-    viewport.y = bounds.y;
+    viewport.setBounds(bounds);
 
     return viewport.growToAspectRatio();
   };

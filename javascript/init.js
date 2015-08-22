@@ -4,7 +4,7 @@
   var MDB = root.MDB = root.MDB || {};
   
   setTimeout(function () {
-    MDB.init()
+    MDB.init();
     MDB.render();
-  }, 200)
+  }, 200);
 })(this);

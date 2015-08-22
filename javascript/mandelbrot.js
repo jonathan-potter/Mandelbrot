@@ -5,8 +5,17 @@
 
   var query = MDB.parseQuery(window.location.search);
 
-  var iterations = 256;
-  var SUPER_SAMPLES = query.super_samples || 1;
+  var CONFIG = {
+       iterations: query.iterations || 256,
+    super_samples: query.super_samples || 1,
+            x_min: query.x_min || -2.0,
+            x_max: query.x_max ||  0.5,
+            y_min: query.y_min || -1.25,
+            y_max: query.y_max ||  1.25
+  };
+
+  var SUPER_SAMPLES = CONFIG.super_samples;
+  var ITERATIONS = CONFIG.iterations;
 
   MDB.canvas = document.getElementById("mandelbrot"),
 
@@ -18,15 +27,15 @@
     MDB.canvas.height = MDB.HEIGHT;
     MDB.ctx = MDB.canvas.getContext("2d");
     MDB.viewport = MDB.Viewport({
-      x: {min: -2, max: 0.5},
-      y: {min: -1.25, max: 1.25}
+      x: {min: CONFIG.x_min, max: CONFIG.x_max},
+      y: {min: CONFIG.y_min, max: CONFIG.y_max}
     });
 
     MDB.viewport.bindToCanvas(MDB.canvas, MDB.render);
   },
 
   MDB.mandelbrot = function (pixel, iteration) {
-    if (iteration >= iterations) { return 0; }
+    if (iteration >= ITERATIONS) { return 0; }
     /** the base equation for the mandelbrot set is  **/
     /** f(z) = z^2 + c **/
 
@@ -71,7 +80,7 @@
           }, 0);
         }
 
-        var color = 1 / SUPER_SAMPLES * crossoverIteration;
+        var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
 
         singleLineImageDate.data[dataIndex + 0] = 255;
         singleLineImageDate.data[dataIndex + 1] = 255;

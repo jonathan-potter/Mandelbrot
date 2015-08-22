@@ -12,9 +12,13 @@
       var key   = splitKeyValue[0];
       var value = splitKeyValue[1];
 
-      hash[key] = value;
+      if (isNaN(value)) {
+        hash[key] = value;  
+      } else {
+        hash[key] = parseInt(value);
+      }
 
       return hash;
   	}, {});
-  }
+  };
 })(this);
