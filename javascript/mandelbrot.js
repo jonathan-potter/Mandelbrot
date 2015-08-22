@@ -5,14 +5,14 @@
 
   var query = MDB.parseQuery(window.location.search);
 
-  var CONFIG = {
-       iterations: query.iterations || 256,
-    super_samples: query.super_samples || 1,
-            x_min: query.x_min || -2.0,
-            x_max: query.x_max ||  0.5,
-            y_min: query.y_min || -1.25,
-            y_max: query.y_max ||  1.25
-  };
+  var CONFIG = _.assign({
+    iterations: 256,
+    super_samples: 1,
+    x_min: -2.0,
+    x_max: 0.5,
+    y_min: -1.25,
+    y_max: 1.25
+  }, query);
 
   var SUPER_SAMPLES = CONFIG.super_samples;
   var ITERATIONS = CONFIG.iterations;
@@ -31,7 +31,7 @@
       y: {min: CONFIG.y_min, max: CONFIG.y_max}
     });
 
-    MDB.viewport.bindToCanvas(MDB.canvas, MDB.render);
+    MDB.viewport.bindToCanvas(MDB.canvas);
   },
 
   MDB.mandelbrot = function (pixel, iteration) {

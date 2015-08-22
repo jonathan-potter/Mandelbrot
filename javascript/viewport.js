@@ -13,6 +13,18 @@
       this.xBounds = bounds.x;
       this.yBounds = bounds.y;
     },
+    navigateToCurrentBounds: function () {
+      var query = MDB.parseQuery();
+
+      var newQuery = _.assign({}, query, {
+        x_min: this.xBounds.min,
+        x_max: this.xBounds.max,
+        y_min: this.yBounds.min,
+        y_max: this.yBounds.max,
+      });
+
+      MDB.setQuery(newQuery);
+    },
     center: function () {
       return {
         x: (this.xBounds.max + this.xBounds.min) / 2,
@@ -73,8 +85,10 @@
           max: location.y + (range.y * ZOOM_SIZE * 0.5)
         }
       });
+
+      this.navigateToCurrentBounds();
     },
-    bindToCanvas: function (canvas, renderCallback) {
+    bindToCanvas: function (canvas) {
       var self = this;
 
       self.canvas = canvas;
@@ -85,8 +99,6 @@
 
           self.highlightZoomBox(canvasClickLocation);
           self.zoomToLocation(cartesianClickLocation);
-
-          setTimeout(renderCallback, 0);
         }
       });
     },
@@ -108,36 +120,32 @@
       context.stroke();
     },
     growToAspectRatio: function () {
-      var aspectRatio = MDB.WIDTH / MDB.HEIGHT;
+      var windowAspectRatio = MDB.WIDTH / MDB.HEIGHT;
 
       var range = this.range();
       var center = this.center();
       var currentAspectRatio = range.x / range.y;
 
-      var distanceFromCenter;
+      var newDistanceFromCenter;
       var xBounds = this.xBounds;
       var yBounds = this.yBounds;
-      if (currentAspectRatio > aspectRatio) {
+      if (currentAspectRatio > windowAspectRatio) {
         /* height needs expansion */
-        distanceFromCenter = {
-          min: (xBounds.min - center.y),
-          max: (yBounds.max - center.y)
-        };
+        var verticalEdgeToCenterDistance = yBounds.min - center.y;
 
+        newDistanceFromCenter = verticalEdgeToCenterDistance * (currentAspectRatio / windowAspectRatio);
         yBounds = {
-          min: center.y + distanceFromCenter.min * (currentAspectRatio / aspectRatio),
-          max: center.y - distanceFromCenter.min * (currentAspectRatio / aspectRatio)
+          min: center.y + newDistanceFromCenter,
+          max: center.y - newDistanceFromCenter
         };
       } else {
         /* width needs expansion */
-        distanceFromCenter = {
-          min: (xBounds.min - center.x),
-          max: (xBounds.max - center.x)
-        };
+        var horizontalEdgeToCenterDistance = xBounds.min - center.x;
 
+        newDistanceFromCenter = horizontalEdgeToCenterDistance * (windowAspectRatio / currentAspectRatio);
         xBounds = {
-          min: center.x + distanceFromCenter.min * (aspectRatio / currentAspectRatio),
-          max: center.x - distanceFromCenter.min * (aspectRatio / currentAspectRatio)
+          min: center.x + newDistanceFromCenter,
+          max: center.x - newDistanceFromCenter
         };
       }
 
