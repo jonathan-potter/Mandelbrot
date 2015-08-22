@@ -34,6 +34,8 @@
       return [key, value].join('=');
     });
 
-    window.location.search = '?' + keyValuePairs.join('&');
+    var path = window.location.pathname;
+    var query = '?' + keyValuePairs.join('&');
+    window.location.replace(path + query);
   };
 })(this);
