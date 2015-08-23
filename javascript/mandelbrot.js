@@ -14,8 +14,9 @@
     y_max:  1.25
   }, query);
 
-  var SUPER_SAMPLES = CONFIG.super_samples;
   var ITERATIONS = CONFIG.iterations;
+  var SUPER_SAMPLES = CONFIG.super_samples;
+  var RENDER_FPS = 10.0;
 
   MDB.canvas = document.getElementById("mandelbrot"),
 
@@ -65,12 +66,34 @@
     var lastUpdate = (new Date()).getTime();
     var topLeft = MDB.viewport.topLeft();
 
-    MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, 0);
+    MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0);
+  };
+
+  MDB.renderRows = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {   
+    /* thanks to cslarsen */
+    /* https://github.com/cslarsen/mandelbrot-js */
+    /* allow the screen to refresh after a given period */
+
+    if (y_index < MDB.HEIGHT) {
+      MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, y_index);
+
+      var now = (new Date()).getTime();
+      var timeSinceLastUpdate = now - lastUpdate;
+      if (timeSinceLastUpdate >= 1000.0 / RENDER_FPS) {
+        lastUpdate = now;
+        setTimeout(function () {
+          MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
+        }, 0);
+      } else {
+        MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
+      }
+    } else {
+      MDB.activelyRendering = false;
+      console.timeEnd('render timer');
+    }
   };
 
   MDB.renderRow = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
-    /* recursive function that renders each horizontal */
-    /* line then calls itself to render the next line */
     for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
 
       var crossoverIteration = 0;
@@ -93,25 +116,7 @@
       imageData.data[dataIndex + 3] = color;
     }
 
-    MDB.ctx.putImageData(imageData, 0, y_index);  
-
-    /* thanks to cslarsen */
-    /* https://github.com/cslarsen/mandelbrot-js */
-    /* allow the screen to refresh after a given period */
-    if (y_index < MDB.HEIGHT) {
-      var now = (new Date()).getTime();
-      if ((now - lastUpdate) >= 1000.0 / 10.0) {
-        lastUpdate = now;
-        setTimeout(function () {
-        MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
-        }, 0);
-      } else {
-        MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
-      }
-    } else {
-      MDB.activelyRendering = false;
-      console.timeEnd('render timer');
-    }
+    MDB.ctx.putImageData(imageData, 0, y_index);
   };
 
 })(this);
