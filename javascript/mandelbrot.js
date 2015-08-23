@@ -9,9 +9,9 @@
     iterations: 256,
     super_samples: 1,
     x_min: -2.0,
-    x_max: 0.5,
+    x_max:  0.5,
     y_min: -1.25,
-    y_max: 1.25
+    y_max:  1.25
   }, query);
 
   var SUPER_SAMPLES = CONFIG.super_samples;
@@ -36,8 +36,8 @@
 
   MDB.mandelbrot = function (pixel, iteration) {
     if (iteration >= ITERATIONS) { return 0; }
-    /** the base equation for the mandelbrot set is  **/
-    /** f(z) = z^2 + c **/
+    /* the base equation for the mandelbrot set is  */
+    /* f(z) = z^2 + c */
 
     var c = pixel.c;
     var z = pixel.z;
@@ -61,57 +61,57 @@
     var dx = MDB.viewport.delta().x;
     var dy = MDB.viewport.delta().y;
 
-    var singleLineImageDate = new ImageData(MDB.WIDTH, 1);
+    var imageData = new ImageData(MDB.WIDTH, 1);
     var lastUpdate = (new Date()).getTime();
+    var topLeft = MDB.viewport.topLeft();
 
-    var scanLine = function (y_index) {
-      y_index = y_index || 0;
+    MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, 0);
+  };
 
-      var topLeft = MDB.viewport.topLeft();
-      var dataIndex = 0;
-      for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
+  MDB.renderRow = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
+    /* recursive function that renders each horizontal */
+    /* line then calls itself to render the next line */
+    for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
 
-        var crossoverIteration = 0;
-        for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
-          var x = topLeft.x + (x_index + Math.random()) * dx;
-          var y = topLeft.y + (y_index + Math.random()) * dy;
+      var crossoverIteration = 0;
+      for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
+        var x = topLeft.x + (x_index + Math.random()) * dx;
+        var y = topLeft.y + (y_index + Math.random()) * dy;
 
-          crossoverIteration += MDB.mandelbrot({
-            c: {real: x, imaginary: y},
-            z: {real: 0, imaginary: 0}
-          });
-        }
-
-        var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
-
-        singleLineImageDate.data[dataIndex + 0] = 255;
-        singleLineImageDate.data[dataIndex + 1] = 255;
-        singleLineImageDate.data[dataIndex + 2] = 255;
-        singleLineImageDate.data[dataIndex + 3] = color;
-        dataIndex += 4;
+        crossoverIteration += MDB.mandelbrot({
+          c: {real: x, imaginary: y},
+          z: {real: 0, imaginary: 0}
+        });
       }
-      MDB.ctx.putImageData(singleLineImageDate, 0, y_index);  
 
-      /* thanks to cslarsen */
-      /* https://github.com/cslarsen/mandelbrot-js */
-      /* allow the screen to refresh after a given period */
-      if (y_index < MDB.HEIGHT) {
-        var now = (new Date()).getTime();
-        if ((now - lastUpdate) >= 1000.0 / 10.0) {
-          lastUpdate = now;
-          setTimeout(function () {
-            scanLine(++y_index);
-          }, 0);
-        } else {
-          scanLine(++y_index);
-        }
+      var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
+
+      var dataIndex = x_index * 4;
+      imageData.data[dataIndex + 0] = 255;
+      imageData.data[dataIndex + 1] = 255;
+      imageData.data[dataIndex + 2] = 255;
+      imageData.data[dataIndex + 3] = color;
+    }
+
+    MDB.ctx.putImageData(imageData, 0, y_index);  
+
+    /* thanks to cslarsen */
+    /* https://github.com/cslarsen/mandelbrot-js */
+    /* allow the screen to refresh after a given period */
+    if (y_index < MDB.HEIGHT) {
+      var now = (new Date()).getTime();
+      if ((now - lastUpdate) >= 1000.0 / 10.0) {
+        lastUpdate = now;
+        setTimeout(function () {
+        MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
+        }, 0);
       } else {
-        MDB.activelyRendering = false;
-        console.timeEnd('render timer');
+        MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
       }
-    };
-    scanLine();
-
+    } else {
+      MDB.activelyRendering = false;
+      console.timeEnd('render timer');
+    }
   };
 
 })(this);
