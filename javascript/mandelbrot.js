@@ -66,10 +66,15 @@
     var lastUpdate = (new Date()).getTime();
     var topLeft = MDB.viewport.topLeft();
 
-    MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0);
+    var deferred = Promise.defer();
+    MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, deferred)
+    .then(function () {
+      MDB.activelyRendering = false;
+      console.timeEnd('render timer');
+    });
   };
 
-  MDB.renderRows = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {   
+  MDB.renderRows = function (dx, dy, topLeft, lastUpdate, imageData, y_index, deferred) {   
     /* thanks to cslarsen */
     /* https://github.com/cslarsen/mandelbrot-js */
     /* allow the screen to refresh after a given period */
@@ -82,15 +87,16 @@
       if (timeSinceLastUpdate >= 1000.0 / RENDER_FPS) {
         lastUpdate = now;
         setTimeout(function () {
-          MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
+          MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
         }, 0);
       } else {
-        MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index);
+        MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
       }
     } else {
-      MDB.activelyRendering = false;
-      console.timeEnd('render timer');
+      deferred.resolve();
     }
+
+    return deferred.promise;
   };
 
   MDB.renderRow = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
