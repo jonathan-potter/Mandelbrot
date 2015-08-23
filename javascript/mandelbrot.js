@@ -3,20 +3,17 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  var query = MDB.parseQuery(window.location.search);
-
-  var CONFIG = _.assign({
+  var DEFAULT_CONFIG = {
     iterations: 256,
     super_samples: 1,
     x_min: -2.0,
     x_max:  0.5,
     y_min: -1.25,
     y_max:  1.25
-  }, query);
+  };
 
-  var ITERATIONS = CONFIG.iterations;
-  var SUPER_SAMPLES = CONFIG.super_samples;
   var RENDER_FPS = 10.0;
+  var CONFIG, ITERATIONS, SUPER_SAMPLES;
 
   MDB.canvas = document.getElementById("mandelbrot"),
 
@@ -27,12 +24,6 @@
     MDB.canvas.width = MDB.WIDTH;
     MDB.canvas.height = MDB.HEIGHT;
     MDB.ctx = MDB.canvas.getContext("2d");
-    MDB.viewport = MDB.Viewport({
-      x: {min: CONFIG.x_min, max: CONFIG.x_max},
-      y: {min: CONFIG.y_min, max: CONFIG.y_max}
-    });
-
-    MDB.viewport.bindToCanvas(MDB.canvas);
   },
 
   MDB.mandelbrot = function (pixel, iteration) {
@@ -55,7 +46,19 @@
     return MDB.mandelbrot(pixel, ++iteration || 1);
   },
 
-  MDB.render = function () {
+  MDB.render = function (config) {
+    if (!config) { config = MDB.parseLocationHash(); }
+    
+    CONFIG = _.assign(DEFAULT_CONFIG, config);
+    ITERATIONS = CONFIG.iterations;
+    SUPER_SAMPLES = CONFIG.super_samples;
+
+    MDB.viewport = MDB.Viewport({
+      x: {min: CONFIG.x_min, max: CONFIG.x_max},
+      y: {min: CONFIG.y_min, max: CONFIG.y_max}
+    });
+    MDB.viewport.bindToCanvas(MDB.canvas);
+
     MDB.activelyRendering = true;
     console.time('render timer');
 
@@ -75,15 +78,17 @@
   };
 
   MDB.renderRows = function (dx, dy, topLeft, lastUpdate, imageData, y_index, deferred) {   
-    /* thanks to cslarsen */
-    /* https://github.com/cslarsen/mandelbrot-js */
-    /* allow the screen to refresh after a given period */
+    /* recursive function which renders individual */
+    /* lines and handles timing of screen updates. */
 
     if (y_index < MDB.HEIGHT) {
       MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, y_index);
 
       var now = (new Date()).getTime();
       var timeSinceLastUpdate = now - lastUpdate;
+
+      /* thanks to cslarsen */
+      /* https://github.com/cslarsen/mandelbrot-js */
       if (timeSinceLastUpdate >= 1000.0 / RENDER_FPS) {
         lastUpdate = now;
         setTimeout(function () {
@@ -92,6 +97,7 @@
       } else {
         MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
       }
+
     } else {
       deferred.resolve();
     }

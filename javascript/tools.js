@@ -3,8 +3,8 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
-  MDB.parseQuery = function (query) {
-    query = query || window.location.search;
+  MDB.parseLocationHash = function (query) {
+    query = query || window.location.hash;
 
     var keyValuePairs;
     if (query.length > 0) {
@@ -29,13 +29,11 @@
   	}, {});
   };
 
-  MDB.setQuery = function (query) {
+  MDB.setLocationHash = function (query) {
     var keyValuePairs = _.map(query, function (value, key) {
       return [key, value].join('=');
     });
 
-    var path = window.location.pathname;
-    var query = '?' + keyValuePairs.join('&');
-    window.location.replace(path + query);
+    window.location.hash = keyValuePairs.join('&');
   };
 })(this);

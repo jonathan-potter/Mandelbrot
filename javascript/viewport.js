@@ -12,18 +12,18 @@
     setBounds: function (bounds) {
       this.xBounds = bounds.x;
       this.yBounds = bounds.y;
-    },
-    navigateToCurrentBounds: function () {
-      var query = MDB.parseQuery();
 
-      var newQuery = _.assign({}, query, {
+      return Promise.resolve();
+    },
+    locationHash: function () {
+      var query = MDB.parseLocationHash();
+
+      return _.assign({}, query, {
         x_min: this.xBounds.min,
         x_max: this.xBounds.max,
         y_min: this.yBounds.min,
         y_max: this.yBounds.max,
       });
-
-      MDB.setQuery(newQuery);
     },
     center: function () {
       return {
@@ -73,6 +73,7 @@
       };
     },
     zoomToLocation: function (location) {
+      var self = this;
       var range = this.range();
 
       this.setBounds({
@@ -84,9 +85,11 @@
           min: location.y - (range.y * ZOOM_SIZE * 0.5),
           max: location.y + (range.y * ZOOM_SIZE * 0.5)
         }
+      }).then(function () {
+        var locationHash = self.locationHash();
+        MDB.setLocationHash(locationHash);
+        MDB.render(locationHash);        
       });
-
-      this.navigateToCurrentBounds();
     },
     bindToCanvas: function (canvas) {
       var self = this;
