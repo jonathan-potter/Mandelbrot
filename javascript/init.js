@@ -1,12 +1,8 @@
 'use strict';
 
-define(function (require) {
+var Renderer = require('javascript/renderer');
 
-  var Renderer = require('renderer');
-
-  setTimeout(function () {
-    Renderer.init();
-    Renderer.render();
-  }, 500);
-
-});
+setTimeout(function () {
+  Renderer.init();
+  Renderer.render();
+}, 200);

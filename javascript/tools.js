@@ -1,43 +1,39 @@
 'use strict';
 
-define(function (require) {
+var map = require('lodash/collection/map');
 
-  var map = require('../dependencies/lodash/collection/map');
-  
-  return {
-    parseLocationHash: function (query) {
-      query = query || window.location.hash;
+module.exports = {
+  parseLocationHash: function (query) {
+    query = query || window.location.hash;
 
-      var keyValuePairs;
-      if (query.length > 0) {
-        keyValuePairs = query.slice(1).split('&');
+    var keyValuePairs;
+    if (query.length > 0) {
+      keyValuePairs = query.slice(1).split('&');
+    } else {
+      keyValuePairs = [];
+    }
+
+    return keyValuePairs.reduce(function (hash, keyValuePair) {
+      var splitKeyValue = keyValuePair.split('=');
+
+      var key   = splitKeyValue[0];
+      var value = splitKeyValue[1];
+
+      if (isNaN(value)) {
+        hash[key] = value;  
       } else {
-        keyValuePairs = [];
+        hash[key] = parseFloat(value);
       }
 
-      return keyValuePairs.reduce(function (hash, keyValuePair) {
-        var splitKeyValue = keyValuePair.split('=');
+      return hash;
+    }, {});
+  },
 
-        var key   = splitKeyValue[0];
-        var value = splitKeyValue[1];
+  setLocationHash: function (query) {
+    var keyValuePairs = map(query, function (value, key) {
+      return [key, value].join('=');
+    });
 
-        if (isNaN(value)) {
-          hash[key] = value;  
-        } else {
-          hash[key] = parseFloat(value);
-        }
-
-        return hash;
-      }, {});
-    },
-
-    setLocationHash: function (query) {
-      var keyValuePairs = map(query, function (value, key) {
-        return [key, value].join('=');
-      });
-
-      window.location.hash = keyValuePairs.join('&');
-    }
-  };
-
-});
+    window.location.hash = keyValuePairs.join('&');
+  }
+};
