@@ -3,6 +3,9 @@
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
 
+  var Tools = MDB.Tools;
+  var Renderer = MDB.Renderer;
+
   var HIGHLIGHT_COLOR = 'white';
   var ZOOM_SIZE = 0.1;
 
@@ -16,7 +19,7 @@
       return Promise.resolve();
     },
     locationHash: function () {
-      var query = MDB.parseLocationHash();
+      var query = Tools.parseLocationHash();
 
       return _.assign({}, query, {
         x_min: this.xBounds.min,
@@ -39,8 +42,8 @@
     },
     delta: function () {
       return {
-        x: this.range().x / MDB.WIDTH,
-        y: this.range().y / MDB.HEIGHT
+        x: this.range().x / this.width,
+        y: this.range().y / this.height
       };
     },
     topLeft: function () {
@@ -59,8 +62,8 @@
       var currentCanvasSize = this.canvasSize();
 
       return {
-        x: event.offsetX / currentCanvasSize.x * this.canvas.width,
-        y: event.offsetY / currentCanvasSize.y * this.canvas.height
+        x: event.offsetX / currentCanvasSize.x * this.width,
+        y: event.offsetY / currentCanvasSize.y * this.height
       };
     },
     cartesianClickLocation: function (canvasClickLocation) {
@@ -68,8 +71,8 @@
       var topLeft = this.topLeft();
 
       return {
-        x: topLeft.x + range.x * canvasClickLocation.x / this.canvas.width,
-        y: topLeft.y + range.y * canvasClickLocation.y / this.canvas.height
+        x: topLeft.x + range.x * canvasClickLocation.x / this.width,
+        y: topLeft.y + range.y * canvasClickLocation.y / this.height
       };
     },
     zoomToLocation: function (location) {
@@ -87,8 +90,8 @@
         }
       }).then(function () {
         var locationHash = self.locationHash();
-        MDB.setLocationHash(locationHash);
-        MDB.render(locationHash);        
+        Tools.setLocationHash(locationHash);
+        MDB.Renderer.render(locationHash);        
       });
     },
     bindToCanvas: function (canvas) {
@@ -123,7 +126,7 @@
       context.stroke();
     },
     growToAspectRatio: function () {
-      var windowAspectRatio = MDB.WIDTH / MDB.HEIGHT;
+      var windowAspectRatio = this.width / this.height;
 
       var range = this.range();
       var center = this.center();
@@ -159,13 +162,19 @@
     }
   };
 
-  MDB.Viewport = function (bounds) {
+  MDB.Viewport = function (dimensions) {
+    var bounds = dimensions.bounds;
+    var width = dimensions.width;
+    var height = dimensions.height;
+
     var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
     viewport.setBounds(bounds);
+    viewport.width = width;
+    viewport.height = height;
     viewport.growToAspectRatio();
 
-    return  viewport;
+    return viewport;
   };
 
 })(this);

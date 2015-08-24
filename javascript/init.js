@@ -2,9 +2,11 @@
 
 (function (root) {
   var MDB = root.MDB = root.MDB || {};
+
+  var Renderer = MDB.Renderer;
   
   setTimeout(function () {
-    MDB.init();
-    MDB.render();
+    Renderer.init();
+    Renderer.render();
   }, 200);
 })(this);
