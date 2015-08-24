@@ -42,14 +42,14 @@ module.exports = {
     Config.activelyRendering = true;
     console.time('render timer');
 
-    var deferred = Promise.defer();
-    self.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, deferred)
-    .then(function () {
+    new Promise(function (resolve) {
+      self.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, resolve)
+    }).then(function () {
       Config.activelyRendering = false;
       console.timeEnd('render timer');
     });
   },
-  renderRows: function (dx, dy, topLeft, lastUpdate, imageData, y_index, deferred) {   
+  renderRows: function (dx, dy, topLeft, lastUpdate, imageData, y_index, resolve) {   
     /* recursive function which renders individual */
     /* lines and handles timing of screen updates. */
     var self = this;
@@ -65,17 +65,15 @@ module.exports = {
       if (timeSinceLastUpdate >= 1000.0 / CONFIG.render_fps) {
         lastUpdate = now;
         setTimeout(function () {
-          self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
+          self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, resolve);
         }, 0);
       } else {
-        self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
+        self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, resolve);
       }
 
     } else {
-      deferred.resolve();
+      resolve();
     }
-
-    return deferred.promise;
   },
   renderRow: function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
     var ITERATIONS = CONFIG.iterations;
