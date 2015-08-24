@@ -9,9 +9,14 @@ Instructions:
 --------
 ```
 npm install
-webpack
+webpack-dev-server
 ```
-open `index.html` in your browser.
+open `http://localhost:8080/` in your browser.
+
+### Recommended Packages to Globally Install
+
+ * babel-eslint
+ * webpack-dev-server
 
 ## Advanced Features
 
