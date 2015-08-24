@@ -1,10 +1,10 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  var Tools = MDB.Tools;
-  var Renderer = MDB.Renderer;
+  var assign = require('../dependencies/lodash/object/assign');
+  var Tools = require('tools');
+  var Config = require('config');
 
   var HIGHLIGHT_COLOR = 'white';
   var ZOOM_SIZE = 0.1;
@@ -21,7 +21,7 @@
     locationHash: function () {
       var query = Tools.parseLocationHash();
 
-      return _.assign({}, query, {
+      return assign({}, query, {
         x_min: this.xBounds.min,
         x_max: this.xBounds.max,
         y_min: this.yBounds.min,
@@ -91,15 +91,16 @@
       }).then(function () {
         var locationHash = self.locationHash();
         Tools.setLocationHash(locationHash);
-        MDB.Renderer.render(locationHash);        
+        self.renderer.render(locationHash);        
       });
     },
-    bindToCanvas: function (canvas) {
+    bindToCanvas: function (canvas, renderer) {
       var self = this;
 
+      self.renderer = renderer;
       self.canvas = canvas;
       self.canvas.addEventListener('click', function (event) {
-        if (!MDB.activelyRendering) {
+        if (!Config.activelyRendering) {
           var canvasClickLocation    = self.canvasClickLocation(event);
           var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
 
@@ -162,7 +163,7 @@
     }
   };
 
-  MDB.Viewport = function (dimensions) {
+  return function (dimensions) {
     var bounds = dimensions.bounds;
     var width = dimensions.width;
     var height = dimensions.height;
@@ -177,4 +178,4 @@
     return viewport;
   };
 
-})(this);
+});

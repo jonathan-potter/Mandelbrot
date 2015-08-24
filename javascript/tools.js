@@ -1,9 +1,10 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  MDB.Tools = {
+  var map = require('../dependencies/lodash/collection/map');
+  
+  return {
     parseLocationHash: function (query) {
       query = query || window.location.hash;
 
@@ -31,7 +32,7 @@
     },
 
     setLocationHash: function (query) {
-      var keyValuePairs = _.map(query, function (value, key) {
+      var keyValuePairs = map(query, function (value, key) {
         return [key, value].join('=');
       });
 
@@ -39,4 +40,4 @@
     }
   };
 
-})(this);
+});

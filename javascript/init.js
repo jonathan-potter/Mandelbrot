@@ -1,12 +1,12 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  var Renderer = MDB.Renderer;
-  
+  var Renderer = require('renderer');
+
   setTimeout(function () {
     Renderer.init();
     Renderer.render();
-  }, 200);
-})(this);
+  }, 500);
+
+});

@@ -1,15 +1,14 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  var Config     = MDB.Config;
-  var Mandelbrot = MDB.Mandelbrot;
-  var Tools      = MDB.Tools;
-  var Viewport   = MDB.Viewport;
+  var Config     = require('config');
+  var Mandelbrot = require('mandelbrot');
+  var Tools      = require('tools');
+  var Viewport   = require('viewport');
 
   var CONFIG;
-  MDB.Renderer = {
+  return {
     activelyRendering: false,
     canvas: null,
     init: function () {
@@ -33,7 +32,7 @@
         width: self.canvas.width,
         height: self.canvas.height
       });
-      self.viewport.bindToCanvas(self.canvas);
+      self.viewport.bindToCanvas(self.canvas, self);
 
       var dx = self.viewport.delta().x;
       var dy = self.viewport.delta().y;
@@ -42,13 +41,13 @@
       var lastUpdate = (new Date()).getTime();
       var topLeft = self.viewport.topLeft();
 
-      MDB.activelyRendering = true;
+      Config.activelyRendering = true;
       console.time('render timer');
 
       var deferred = Promise.defer();
       self.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, deferred)
       .then(function () {
-        MDB.activelyRendering = false;
+        Config.activelyRendering = false;
         console.timeEnd('render timer');
       });
     },
@@ -110,4 +109,4 @@
     }
   };
 
-})(this);
+});

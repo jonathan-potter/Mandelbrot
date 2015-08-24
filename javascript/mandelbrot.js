@@ -1,12 +1,11 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  var Config = MDB.Config;
+  var Config = require('config');
 
   var max_iterations = Config.getConfig().iterations;
-  var Mandelbrot = MDB.Mandelbrot = function (pixel, iteration) {
+  var Mandelbrot = function (pixel, iteration) {
     if (iteration >= max_iterations) { return 0; }
     /* the base equation for the mandelbrot set is  */
     /* f(z) = z^2 + c */
@@ -25,5 +24,7 @@
 
     return Mandelbrot(pixel, ++iteration || 1);
   };
+  
+  return Mandelbrot;
 
-})(this);
+});

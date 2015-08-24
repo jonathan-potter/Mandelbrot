@@ -1,9 +1,9 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+define(function (require) {
 
-  var Tools = MDB.Tools;
+  var assign = require('../dependencies/lodash/object/assign');
+  var Tools = require('tools');
 
   var DEFAULT_CONFIG = {
     iterations: 256,
@@ -15,12 +15,12 @@
     render_fps: 10.0
   };
 
-  MDB.Config = {
-	getConfig: function (locationHash) {
-	  var config = locationHash || Tools.parseLocationHash();
+  return {
+    getConfig: function (locationHash) {
+      var config = locationHash || Tools.parseLocationHash();
 
-  	  return _.assign(DEFAULT_CONFIG, config);
+      return assign(DEFAULT_CONFIG, config);
     }
   };
 
-})(this);
+});
