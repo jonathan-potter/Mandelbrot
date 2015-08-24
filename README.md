@@ -1,0 +1,30 @@
+Mandelbrot
+========
+
+SUMMARY:
+--------
+[Mandelbrot](http://jonathan-potter.github.io/Mandelbrot/) is a fractal rendering project built to generate images of the [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set). It allows the user to zoom by clicking.
+
+Instructions:
+--------
+```
+npm install
+webpack
+```
+open `index.html` in your browser.
+
+## Advanced Features
+
+settings that can be activated by modifying the query string directly
+
+ * `(setting_name): (default_value) (description)`
+ * iterations: (256) iteration depth for the Mandelbrot calculation
+ * super_samples: (1) number of super samples rendered 
+
+## Technologies Used
+The following technologies were used to build Mandelbrot:
+
+ * Webpack
+ * Node
+ * Lodash
+ * Skeleton

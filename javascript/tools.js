@@ -1,9 +1,9 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+var map = require('lodash/collection/map');
 
-  MDB.parseLocationHash = function (query) {
+module.exports = {
+  parseLocationHash: function (query) {
     query = query || window.location.hash;
 
     var keyValuePairs;
@@ -26,14 +26,14 @@
       }
 
       return hash;
-  	}, {});
-  };
+    }, {});
+  },
 
-  MDB.setLocationHash = function (query) {
-    var keyValuePairs = _.map(query, function (value, key) {
+  setLocationHash: function (query) {
+    var keyValuePairs = map(query, function (value, key) {
       return [key, value].join('=');
     });
 
     window.location.hash = keyValuePairs.join('&');
-  };
-})(this);
+  }
+};

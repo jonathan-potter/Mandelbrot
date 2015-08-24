@@ -1,0 +1,20 @@
+{
+  "name": "Mandelbrot",
+  "version": "0.1.0",
+  "description": "ever fancier javascript implementation of the mandelbrot set",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonathan-potter/Mandelbrot.git"
+  },
+  "author": "Jonathan Potter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonathan-potter/Mandelbrot/issues"
+  },
+  "homepage": "https://github.com/jonathan-potter/Mandelbrot",
+  "dependencies": {
+    "webpack": "^1.11.0",
+    "lodash": "^3.10.1"
+  }
+}

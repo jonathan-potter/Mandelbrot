@@ -1,101 +1,74 @@
 'use strict';
 
-(function (root) {
-  var MDB = root.MDB = root.MDB || {};
+var Config     = require('javascript/config');
+var Mandelbrot = require('javascript/mandelbrot');
+var Tools      = require('javascript/tools');
+var Viewport   = require('javascript/viewport');
 
-  var DEFAULT_CONFIG = {
-    iterations: 256,
-    super_samples: 1,
-    x_min: -2.0,
-    x_max:  0.5,
-    y_min: -1.25,
-    y_max:  1.25
-  };
-
-  var RENDER_FPS = 10.0;
-  var CONFIG, ITERATIONS, SUPER_SAMPLES;
-
-  MDB.canvas = document.getElementById("mandelbrot"),
-
-  MDB.init = function () {
-    MDB.activelyRendering = false;
-    MDB.WIDTH = MDB.canvas.offsetWidth;
-    MDB.HEIGHT = MDB.canvas.offsetHeight;
-    MDB.canvas.width = MDB.WIDTH;
-    MDB.canvas.height = MDB.HEIGHT;
-    MDB.ctx = MDB.canvas.getContext("2d");
+var CONFIG;
+module.exports = {
+  activelyRendering: false,
+  canvas: null,
+  init: function () {
+    this.canvas = document.getElementById("mandelbrot");
+    this.canvas.width = this.canvas.offsetWidth;
+    this.canvas.height = this.canvas.offsetHeight;
+    this.context = this.canvas.getContext("2d");
   },
+  render: function (locationHash) {
+    if (!locationHash) { locationHash = Tools.parseLocationHash(locationHash); }
 
-  MDB.mandelbrot = function (pixel, iteration) {
-    if (iteration >= ITERATIONS) { return 0; }
-    /* the base equation for the mandelbrot set is  */
-    /* f(z) = z^2 + c */
-
-    var c = pixel.c;
-    var z = pixel.z;
-    var real = z.real * z.real - z.imaginary * z.imaginary + c.real;
-    var imaginary = 2 * z.real * z.imaginary + c.imaginary;
-
-    pixel.z.real = real;
-    pixel.z.imaginary = imaginary;
-
-    if (real * real + imaginary * imaginary > 4) {
-      return iteration;
-    }
-
-    return MDB.mandelbrot(pixel, ++iteration || 1);
-  },
-
-  MDB.render = function (config) {
-    if (!config) { config = MDB.parseLocationHash(); }
+    var self = this;
     
-    CONFIG = _.assign(DEFAULT_CONFIG, config);
-    ITERATIONS = CONFIG.iterations;
-    SUPER_SAMPLES = CONFIG.super_samples;
+    CONFIG = Config.getConfig(locationHash);
 
-    MDB.viewport = MDB.Viewport({
-      x: {min: CONFIG.x_min, max: CONFIG.x_max},
-      y: {min: CONFIG.y_min, max: CONFIG.y_max}
+    self.viewport = Viewport({
+      bounds: {
+        x: {min: CONFIG.x_min, max: CONFIG.x_max},
+        y: {min: CONFIG.y_min, max: CONFIG.y_max} 
+      },
+      width: self.canvas.width,
+      height: self.canvas.height
     });
-    MDB.viewport.bindToCanvas(MDB.canvas);
+    self.viewport.bindToCanvas(self.canvas, self);
 
-    MDB.activelyRendering = true;
+    var dx = self.viewport.delta().x;
+    var dy = self.viewport.delta().y;
+
+    var imageData = new ImageData(self.canvas.width, 1);
+    var lastUpdate = (new Date()).getTime();
+    var topLeft = self.viewport.topLeft();
+
+    Config.activelyRendering = true;
     console.time('render timer');
 
-    var dx = MDB.viewport.delta().x;
-    var dy = MDB.viewport.delta().y;
-
-    var imageData = new ImageData(MDB.WIDTH, 1);
-    var lastUpdate = (new Date()).getTime();
-    var topLeft = MDB.viewport.topLeft();
-
     var deferred = Promise.defer();
-    MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, deferred)
+    self.renderRows(dx, dy, topLeft, lastUpdate, imageData, 0, deferred)
     .then(function () {
-      MDB.activelyRendering = false;
+      Config.activelyRendering = false;
       console.timeEnd('render timer');
     });
-  };
-
-  MDB.renderRows = function (dx, dy, topLeft, lastUpdate, imageData, y_index, deferred) {   
+  },
+  renderRows: function (dx, dy, topLeft, lastUpdate, imageData, y_index, deferred) {   
     /* recursive function which renders individual */
     /* lines and handles timing of screen updates. */
+    var self = this;
 
-    if (y_index < MDB.HEIGHT) {
-      MDB.renderRow(dx, dy, topLeft, lastUpdate, imageData, y_index);
+    if (y_index < self.canvas.height) {
+      self.renderRow(dx, dy, topLeft, lastUpdate, imageData, y_index);
 
       var now = (new Date()).getTime();
       var timeSinceLastUpdate = now - lastUpdate;
 
       /* thanks to cslarsen */
       /* https://github.com/cslarsen/mandelbrot-js */
-      if (timeSinceLastUpdate >= 1000.0 / RENDER_FPS) {
+      if (timeSinceLastUpdate >= 1000.0 / CONFIG.render_fps) {
         lastUpdate = now;
         setTimeout(function () {
-          MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
+          self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
         }, 0);
       } else {
-        MDB.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
+        self.renderRows(dx, dy, topLeft, lastUpdate, imageData, ++y_index, deferred);
       }
 
     } else {
@@ -103,17 +76,19 @@
     }
 
     return deferred.promise;
-  };
+  },
+  renderRow: function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
+    var ITERATIONS = CONFIG.iterations;
+    var SUPER_SAMPLES = CONFIG.super_samples;
 
-  MDB.renderRow = function (dx, dy, topLeft, lastUpdate, imageData, y_index) {
-    for (var x_index = 0; x_index < MDB.WIDTH; x_index++) {
+    for (var x_index = 0; x_index < this.canvas.width; x_index++) {
 
       var crossoverIteration = 0;
       for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
         var x = topLeft.x + (x_index + Math.random()) * dx;
         var y = topLeft.y + (y_index + Math.random()) * dy;
 
-        crossoverIteration += MDB.mandelbrot({
+        crossoverIteration += Mandelbrot({
           c: {real: x, imaginary: y},
           z: {real: 0, imaginary: 0}
         });
@@ -128,7 +103,6 @@
       imageData.data[dataIndex + 3] = color;
     }
 
-    MDB.ctx.putImageData(imageData, 0, y_index);
-  };
-
-})(this);
+    this.context.putImageData(imageData, 0, y_index);
+  }
+};
