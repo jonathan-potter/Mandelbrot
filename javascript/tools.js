@@ -1,6 +1,6 @@
 'use strict';
 
-var map = require('lodash/collection/map');
+import map from 'lodash/collection/map';
 
 module.exports = {
   parseLocationHash: function (query) {

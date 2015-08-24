@@ -1,7 +1,7 @@
 'use strict';
 
-var assign = require('lodash/object/assign');
-var Tools = require('javascript/tools');
+import assign from 'lodash/object/assign';
+import Tools  from 'javascript/tools';
 
 var DEFAULT_CONFIG = {
   iterations: 256,
@@ -13,7 +13,7 @@ var DEFAULT_CONFIG = {
   render_fps: 10.0
 };
 
-module.exports =  {
+export default {
   getConfig: function (locationHash) {
     var config = locationHash || Tools.parseLocationHash();
 

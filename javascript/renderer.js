@@ -1,12 +1,12 @@
 'use strict';
 
-var Config     = require('javascript/config');
-var Mandelbrot = require('javascript/mandelbrot');
-var Tools      = require('javascript/tools');
-var Viewport   = require('javascript/viewport');
+import Config     from 'javascript/config';
+import Mandelbrot from 'javascript/mandelbrot';
+import Tools      from 'javascript/tools';
+import Viewport   from 'javascript/viewport';
 
 var CONFIG;
-module.exports = {
+export default {
   activelyRendering: false,
   canvas: null,
   init: function () {

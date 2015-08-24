@@ -1,8 +1,8 @@
 'use strict';
 
-var assign = require('lodash/object/assign');
-var Tools = require('javascript/tools');
-var Config = require('javascript/config');
+import assign from 'lodash/object/assign';
+import Tools  from 'javascript/tools';
+import Config from 'javascript/config';
 
 var HIGHLIGHT_COLOR = 'white';
 var ZOOM_SIZE = 0.1;
@@ -161,7 +161,7 @@ var VIEWPORT_PROTOTYPE = {
   }
 };
 
-module.exports = function (dimensions) {
+export default function (dimensions) {
   var bounds = dimensions.bounds;
   var width = dimensions.width;
   var height = dimensions.height;

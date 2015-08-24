@@ -1,6 +1,6 @@
 'use strict';
 
-var Config = require('javascript/config');
+import Config from 'javascript/config';
 
 var max_iterations = Config.getConfig().iterations;
 var Mandelbrot = function (pixel, iteration) {
@@ -23,5 +23,5 @@ var Mandelbrot = function (pixel, iteration) {
   return Mandelbrot(pixel, ++iteration || 1);
 };
 
-module.exports = Mandelbrot;
+export default Mandelbrot;
 

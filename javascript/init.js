@@ -1,6 +1,6 @@
 'use strict';
 
-var Renderer = require('javascript/renderer');
+import Renderer from 'javascript/renderer';
 
 setTimeout(function () {
   Renderer.init();
