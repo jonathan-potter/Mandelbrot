@@ -12,6 +12,7 @@ module.exports = {
     // Allow to omit extensions when requiring these files
     extensions: ['', '.js', '.jsx', '.js.jsx'],
     alias: {
+      assets: path.resolve(__dirname, 'assets'),
       css: path.resolve(__dirname, 'css'),
       dependencies: path.resolve(__dirname, 'dependencies'),
       javascript: path.resolve(__dirname, 'javascript'),

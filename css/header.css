@@ -24,18 +24,10 @@ heading {
 }
 
 nav {
-  margin: 2px;
   float: right;
 }
 
 nav > ul > li {
-  float: left;
-}
-
-.link-square {
-  background: white;
-  width: 20px;
-  height: 20px;
-  margin-top: 18px;
-  margin-left: 10px;
+  display: inline;
+  font-size: 20px;
 }
