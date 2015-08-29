@@ -1,9 +1,9 @@
 'use strict';
 
-import Config     from 'javascript/config';
-import Mandelbrot from 'javascript/mandelbrot';
-import Tools      from 'javascript/tools';
-import Viewport   from 'javascript/viewport';
+import Config                from 'javascript/config';
+import Mandelbrot            from 'javascript/mandelbrot';
+import { parseLocationHash } from 'javascript/tools';
+import Viewport              from 'javascript/viewport';
 
 var CONFIG;
 export default {
@@ -16,7 +16,7 @@ export default {
     this.context = this.canvas.getContext("2d");
   },
   render: function (locationHash) {
-    if (!locationHash) { locationHash = Tools.parseLocationHash(locationHash); }
+    if (!locationHash) { locationHash = parseLocationHash(locationHash); }
 
     var self = this;
     

@@ -1,7 +1,7 @@
 'use strict';
 
 import assign from 'lodash/object/assign';
-import Tools  from 'javascript/tools';
+import { parseLocationHash } from 'javascript/tools';
 
 import 'dependencies/skeleton/css/normalize.css';
 import 'dependencies/skeleton/css/skeleton.css';
@@ -20,7 +20,7 @@ var DEFAULT_CONFIG = {
 
 export default {
   getConfig: function (locationHash) {
-    var config = locationHash || Tools.parseLocationHash();
+    var config = locationHash || parseLocationHash();
 
     return assign(DEFAULT_CONFIG, config);
   }

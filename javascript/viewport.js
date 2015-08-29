@@ -1,7 +1,7 @@
 'use strict';
 
 import assign from 'lodash/object/assign';
-import Tools  from 'javascript/tools';
+import { parseLocationHash, setLocationHash } from 'javascript/tools';
 
 var HIGHLIGHT_COLOR = 'white';
 var ZOOM_SIZE = 0.1;
@@ -14,7 +14,7 @@ var VIEWPORT_PROTOTYPE = {
     this.yBounds = bounds.y;
   },
   locationHash: function () {
-    var query = Tools.parseLocationHash();
+    var query = parseLocationHash();
 
     return assign({}, query, {
       x_min: this.xBounds.min,
@@ -86,7 +86,7 @@ var VIEWPORT_PROTOTYPE = {
 
     var locationHash = this.locationHash();
 
-    Tools.setLocationHash(locationHash);
+    setLocationHash(locationHash);
     this.renderer.render(locationHash);
   },
   bindToCanvas: function (canvas, renderer) {

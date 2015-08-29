@@ -2,38 +2,33 @@
 
 import map from 'lodash/collection/map';
 
-module.exports = {
-  parseLocationHash: function (query) {
-    query = query || window.location.hash;
+const parseLocationHash = function (query = window.location.hash) {
+  var keyValuePairs;
+  if (query.length > 0) {
+    keyValuePairs = query.slice(1).split('&');
+  } else {
+    keyValuePairs = [];
+  }
 
-    var keyValuePairs;
-    if (query.length > 0) {
-      keyValuePairs = query.slice(1).split('&');
+  return keyValuePairs.reduce((hash, keyValuePair) => {
+    let [key, value] = keyValuePair.split('=');
+
+    if (value && isNaN(value)) {
+      hash[key] = value;  
     } else {
-      keyValuePairs = [];
+      hash[key] = parseFloat(value);
     }
 
-    return keyValuePairs.reduce(function (hash, keyValuePair) {
-      var splitKeyValue = keyValuePair.split('=');
-
-      var key   = splitKeyValue[0];
-      var value = splitKeyValue[1];
-
-      if (isNaN(value)) {
-        hash[key] = value;  
-      } else {
-        hash[key] = parseFloat(value);
-      }
-
-      return hash;
-    }, {});
-  },
-
-  setLocationHash: function (query) {
-    var keyValuePairs = map(query, function (value, key) {
-      return [key, value].join('=');
-    });
-
-    window.location.hash = keyValuePairs.join('&');
-  }
+    return hash;
+  }, {});
 };
+
+const setLocationHash = function (query) {
+  var keyValuePairs = map(query, (value, key) => {
+    return [key, value].join('=');
+  });
+
+  window.location.hash = keyValuePairs.join('&');
+};
+
+export default { parseLocationHash, setLocationHash };   
