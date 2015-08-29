@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: __dirname,
     filename: "bundle.js",
-    chunkFilename: "[id].js"
+    sourceMapFilename: "sourcemap"
   },
   resolve: {
     // Allow to omit extensions when requiring these files
@@ -34,5 +34,6 @@ module.exports = {
     new ExtractTextPlugin("style.css", {
       allChunks: true
     })
-  ]
+  ],
+  devtool: "#inline-source-map"
 };
