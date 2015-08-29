@@ -30,6 +30,7 @@ export default {
       canvas: self.canvas,
       renderer: self
     });
+    
     /* eslint-disable no-console */
     new Promise(function (resolve) {
       self.activelyRendering = true;

@@ -27,10 +27,14 @@ settings that can be activated by modifying the query string directly
  * super_samples: (1) number of super samples rendered 
 
 ## Technologies Used
-The following technologies were used to build Mandelbrot:
-
+##### Development and Build
  * [Babel](https://babeljs.io/)
- * [Lodash](https://lodash.com/)
+ * [ESLint](http://eslint.org/)
  * [Node.js](https://nodejs.org/)
- * [Skeleton](http://getskeleton.com/)
  * [Webpack](http://webpack.github.io/)
+
+##### CSS
+ * [Skeleton](http://getskeleton.com/)
+
+##### Javascript
+ * [Lodash](https://lodash.com/)
