@@ -20,7 +20,7 @@ var VIEWPORT_PROTOTYPE = {
       x_min: this.xBounds.min,
       x_max: this.xBounds.max,
       y_min: this.yBounds.min,
-      y_max: this.yBounds.max,
+      y_max: this.yBounds.max
     });
   },
   center: function () {

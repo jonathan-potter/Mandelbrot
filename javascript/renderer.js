@@ -30,15 +30,16 @@ export default {
       canvas: self.canvas,
       renderer: self
     });
-
-    self.activelyRendering = true;
-    console.time('render timer');
+    /* eslint-disable no-console */
     new Promise(function (resolve) {
+      self.activelyRendering = true;
+      console.time('render timer');
       requestAnimationFrame(self.renderRows.bind(self, 0, resolve));
     }).then(function () {
       self.activelyRendering = false;
       console.timeEnd('render timer');
     });
+    /* eslint-enable no-console */
   },
   renderRows: function (y_index, resolve, timestamp) {
     while(y_index < this.canvas.height && performance.now() - timestamp < 1000.0 / CONFIG.render_fps) {
