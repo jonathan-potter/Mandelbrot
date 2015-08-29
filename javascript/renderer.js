@@ -27,43 +27,42 @@ export default {
         x: {min: CONFIG.x_min, max: CONFIG.x_max},
         y: {min: CONFIG.y_min, max: CONFIG.y_max} 
       },
-      width: self.canvas.width,
-      height: self.canvas.height
+      canvas: self.canvas,
+      renderer: self
     });
-    self.viewport.bindToCanvas(self.canvas, self);
 
-    var dx = self.viewport.delta().x;
-    var dy = self.viewport.delta().y;
-
-    var imageData = new ImageData(self.canvas.width, 1);
-    var topLeft = self.viewport.topLeft();
-
-    Config.activelyRendering = true;
+    self.activelyRendering = true;
     console.time('render timer');
 
     new Promise(function (resolve) {
-      self.renderRows(dx, dy, topLeft, imageData, 0, resolve);
+      self.renderRows(0, resolve);
     }).then(function () {
-      Config.activelyRendering = false;
+      self.activelyRendering = false;
       console.timeEnd('render timer');
     });
   },
-  renderRows: function (dx, dy, topLeft, imageData, y_index, resolve) {
+  renderRows: function (y_index, resolve) {
     var lastFrameTimestamp = performance.now();
 
-    while(y_index < this.canvas.height && performance.now() - lastFrameTimestamp < 1000.0 / 10.0) {
-      this.renderRow(dx, dy, topLeft, imageData, y_index++);
+    while(y_index < this.canvas.height && performance.now() - lastFrameTimestamp < 1000.0 / CONFIG.render_fps) {
+      this.renderRow(y_index++);
     }
 
     if (y_index < this.canvas.height) {
-      requestAnimationFrame(this.renderRows.bind(this, dx, dy, topLeft, imageData, y_index, resolve));
+      requestAnimationFrame(this.renderRows.bind(this, y_index, resolve));
     } else {
       requestAnimationFrame(resolve);
     }
   },
-  renderRow: function (dx, dy, topLeft, imageData, y_index) {
+  renderRow: function (y_index) {
     var ITERATIONS = CONFIG.iterations;
     var SUPER_SAMPLES = CONFIG.super_samples;
+
+    var dx = this.viewport.delta().x;
+    var dy = this.viewport.delta().y;
+
+    var imageData = new ImageData(this.canvas.width, 1);
+    var topLeft = this.viewport.topLeft();
 
     for (var x_index = 0; x_index < this.canvas.width; x_index++) {
 

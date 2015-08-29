@@ -2,7 +2,6 @@
 
 import assign from 'lodash/object/assign';
 import Tools  from 'javascript/tools';
-import Config from 'javascript/config';
 
 var HIGHLIGHT_COLOR = 'white';
 var ZOOM_SIZE = 0.1;
@@ -97,8 +96,10 @@ var VIEWPORT_PROTOTYPE = {
 
     self.renderer = renderer;
     self.canvas = canvas;
+    self.width = canvas.width;
+    self.height = canvas.height;
     self.canvas.addEventListener('click', function (event) {
-      if (!Config.activelyRendering) {
+      if (!self.renderer.activelyRendering) {
         var canvasClickLocation    = self.canvasClickLocation(event);
         var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
 
@@ -106,6 +107,7 @@ var VIEWPORT_PROTOTYPE = {
         self.zoomToLocation(cartesianClickLocation);
       }
     });
+    self.growToAspectRatio();
   },
   highlightZoomBox: function (location) {
     var context = this.canvas.getContext('2d');
@@ -161,17 +163,12 @@ var VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function (dimensions) {
-  var bounds = dimensions.bounds;
-  var width = dimensions.width;
-  var height = dimensions.height;
-
+export default function ({bounds, canvas, renderer}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
   viewport.setBounds(bounds);
-  viewport.width = width;
-  viewport.height = height;
-  viewport.growToAspectRatio();
+  viewport.bindToCanvas(canvas);
+  viewport.renderer = renderer;
 
   return viewport;
-};
+}
