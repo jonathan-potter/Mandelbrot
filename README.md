@@ -29,7 +29,8 @@ settings that can be activated by modifying the query string directly
 ## Technologies Used
 The following technologies were used to build Mandelbrot:
 
- * Webpack
- * Node
- * Lodash
- * Skeleton
+ * [Babel](https://babeljs.io/)
+ * [Lodash](https://lodash.com/)
+ * [Node.js](https://nodejs.org/)
+ * [Skeleton](http://getskeleton.com/)
+ * [Webpack](http://webpack.github.io/)
