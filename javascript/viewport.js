@@ -12,8 +12,6 @@ var VIEWPORT_PROTOTYPE = {
   setBounds: function (bounds) {
     this.xBounds = bounds.x;
     this.yBounds = bounds.y;
-
-    return Promise.resolve();
   },
   locationHash: function () {
     var query = Tools.parseLocationHash();
@@ -45,8 +43,8 @@ var VIEWPORT_PROTOTYPE = {
   },
   topLeft: function () {
     return {
-      x: this.center().x - this.range().x / 2,
-      y: this.center().y - this.range().y / 2
+      x: this.xBounds.min,
+      y: this.yBounds.min
     };
   },
   canvasSize: function () {
@@ -74,9 +72,9 @@ var VIEWPORT_PROTOTYPE = {
   },
   zoomToLocation: function (location) {
     var self = this;
-    var range = this.range();
+    var range = self.range();
 
-    this.setBounds({
+    self.setBounds({
       x: {
         min: location.x - (range.x * ZOOM_SIZE * 0.5),
         max: location.x + (range.x * ZOOM_SIZE * 0.5)

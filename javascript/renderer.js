@@ -33,18 +33,15 @@ export default {
 
     self.activelyRendering = true;
     console.time('render timer');
-
     new Promise(function (resolve) {
-      self.renderRows(0, resolve);
+      requestAnimationFrame(self.renderRows.bind(self, 0, resolve));
     }).then(function () {
       self.activelyRendering = false;
       console.timeEnd('render timer');
     });
   },
-  renderRows: function (y_index, resolve) {
-    var lastFrameTimestamp = performance.now();
-
-    while(y_index < this.canvas.height && performance.now() - lastFrameTimestamp < 1000.0 / CONFIG.render_fps) {
+  renderRows: function (y_index, resolve, timestamp) {
+    while(y_index < this.canvas.height && performance.now() - timestamp < 1000.0 / CONFIG.render_fps) {
       this.renderRow(y_index++);
     }
 
