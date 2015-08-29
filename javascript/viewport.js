@@ -71,10 +71,9 @@ var VIEWPORT_PROTOTYPE = {
     };
   },
   zoomToLocation: function (location) {
-    var self = this;
-    var range = self.range();
+    var range = this.range();
 
-    self.setBounds({
+    this.setBounds({
       x: {
         min: location.x - (range.x * ZOOM_SIZE * 0.5),
         max: location.x + (range.x * ZOOM_SIZE * 0.5)
@@ -83,11 +82,12 @@ var VIEWPORT_PROTOTYPE = {
         min: location.y - (range.y * ZOOM_SIZE * 0.5),
         max: location.y + (range.y * ZOOM_SIZE * 0.5)
       }
-    }).then(function () {
-      var locationHash = self.locationHash();
-      Tools.setLocationHash(locationHash);
-      self.renderer.render(locationHash);        
     });
+
+    var locationHash = this.locationHash();
+
+    Tools.setLocationHash(locationHash);
+    this.renderer.render(locationHash);
   },
   bindToCanvas: function (canvas, renderer) {
     var self = this;

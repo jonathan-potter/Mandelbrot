@@ -2,7 +2,5 @@
 
 import Renderer from 'javascript/renderer';
 
-setTimeout(function () {
-  Renderer.init();
-  Renderer.render();
-}, 200);
+Renderer.init();
+Renderer.render();
