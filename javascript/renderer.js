@@ -1,7 +1,7 @@
 'use strict';
 
 import Config            from 'javascript/config';
-import Mandelbrot        from 'javascript/mandelbrot';
+import { Mandelbrot }    from 'javascript/mandelbrot';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import Viewport          from 'javascript/viewport';
 
@@ -70,10 +70,7 @@ export default {
         var x = topLeft.x + (x_index + Math.random()) * dx;
         var y = topLeft.y + (y_index + Math.random()) * dy;
 
-        crossoverIteration += Mandelbrot({
-          c: {real: x, imaginary: y},
-          z: {real: 0, imaginary: 0}
-        });
+        crossoverIteration += Mandelbrot(x, y);
       }
 
       var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;

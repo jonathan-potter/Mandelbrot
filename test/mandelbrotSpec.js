@@ -1,27 +1,23 @@
 'use strict';
 
-import Mandelbrot from 'javascript/Mandelbrot';
+import { Mandelbrot } from 'javascript/Mandelbrot';
 
 describe('Mandelbrot', () => {
   it('returns 0 for locations within the mandelbrot set', () => {
     let x = 0, y = 0;
 
-    let crossoverIteration = Mandelbrot({
-      c: {real: x, imaginary: y},
-      z: {real: 0, imaginary: 0}
-    });
-
-    expect(crossoverIteration).toEqual(0);
+    expect(Mandelbrot(x, y)).toEqual(0);
   });
 
   it('returns 0 for locations outside radius 2', () => {
     let x = 2.001, y = 0;
 
-    let crossoverIteration = Mandelbrot({
-      c: {real: x, imaginary: y},
-      z: {real: 0, imaginary: 0}
-    });
+    expect(Mandelbrot(x, y)).toEqual(0);
+  });
 
-    expect(crossoverIteration).toEqual(0);
+  it('returns 1 for locations just inside radius 2', () => {
+    let x = 1.999, y = 0;
+
+    expect(Mandelbrot(x, y)).toEqual(1);
   });
 });

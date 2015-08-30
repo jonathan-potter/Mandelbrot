@@ -3,7 +3,7 @@
 import Config from 'javascript/config';
 
 var max_iterations = Config.getConfig().iterations;
-var Mandelbrot = function (pixel, iteration) {
+export default function Fractal(pixel, iteration) {
   if (iteration >= max_iterations) { return 0; }
   /* the base equation for the mandelbrot set is  */
   /* f(z) = z^2 + c */
@@ -20,8 +20,14 @@ var Mandelbrot = function (pixel, iteration) {
     return iteration || 0;
   }
 
-  return Mandelbrot(pixel, ++iteration || 1);
-};
+  return Fractal(pixel, ++iteration || 1);
+}
 
-export default Mandelbrot;
+function Mandelbrot(x, y) {
+  return Fractal({
+    c: {real: x, imaginary: y},
+    z: {real: 0, imaginary: 0}
+  });
+}
 
+export { Mandelbrot };
