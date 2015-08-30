@@ -1,9 +1,9 @@
 'use strict';
 
-import Config                from 'javascript/config';
-import Mandelbrot            from 'javascript/mandelbrot';
-import { parseLocationHash } from 'javascript/tools';
-import Viewport              from 'javascript/viewport';
+import Config            from 'javascript/config';
+import Mandelbrot        from 'javascript/mandelbrot';
+import parseLocationHash from 'javascript/tools/parseLocationHash';
+import Viewport          from 'javascript/viewport';
 
 var CONFIG;
 export default {

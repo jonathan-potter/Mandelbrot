@@ -1,7 +1,8 @@
 'use strict';
 
 import assign from 'lodash/object/assign';
-import { parseLocationHash, setLocationHash } from 'javascript/tools';
+import parseLocationHash from 'javascript/tools/parseLocationHash';
+import setLocationHash from 'javascript/tools/setLocationHash';
 
 var HIGHLIGHT_COLOR = 'white';
 var ZOOM_SIZE = 0.1;

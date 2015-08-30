@@ -1,7 +1,7 @@
 'use strict';
 
 import assign from 'lodash/object/assign';
-import { parseLocationHash } from 'javascript/tools';
+import parseLocationHash from 'javascript/tools/parseLocationHash';
 
 import 'dependencies/skeleton/css/normalize.css';
 import 'dependencies/skeleton/css/skeleton.css';

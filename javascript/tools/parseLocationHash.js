@@ -1,7 +1,5 @@
 'use strict';
 
-import map from 'lodash/collection/map';
-
 export default function (query = window.location.hash) {
   var keyValuePairs;
   if (query.length > 0) {

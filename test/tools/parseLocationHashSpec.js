@@ -1,6 +1,6 @@
 'use strict';
 
-import { parseLocationHash } from 'javascript/tools';
+import parseLocationHash from 'javascript/tools/parseLocationHash';
 
 describe('Tools', () => {
   describe('parseLocationHash', () => {
