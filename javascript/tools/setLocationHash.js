@@ -7,5 +7,5 @@ export default function (query) {
     return [key, value].join('=');
   });
 
-  window.location.hash = keyValuePairs.join('&');
+  window.location.replace('#' + keyValuePairs.join('&'));
 }
