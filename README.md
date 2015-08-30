@@ -27,8 +27,9 @@ settings that can be activated by modifying the query string directly
  * super_samples: (1) number of super samples rendered
 
 ## Tests
+still in the process of writing tests
 
-Instructions:
+##### Instructions:
 --------
 ```
 npm test

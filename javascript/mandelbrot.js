@@ -17,7 +17,7 @@ var Mandelbrot = function (pixel, iteration) {
   pixel.z.imaginary = imaginary;
 
   if (real * real + imaginary * imaginary > 4) {
-    return iteration;
+    return iteration || 0;
   }
 
   return Mandelbrot(pixel, ++iteration || 1);

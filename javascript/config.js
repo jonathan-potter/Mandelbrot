@@ -3,11 +3,6 @@
 import assign from 'lodash/object/assign';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 
-import 'dependencies/skeleton/css/normalize.css';
-import 'dependencies/skeleton/css/skeleton.css';
-import 'css/mandelbrot.css';
-import 'css/header.css';
-
 var DEFAULT_CONFIG = {
   iterations: 256,
   super_samples: 1,
