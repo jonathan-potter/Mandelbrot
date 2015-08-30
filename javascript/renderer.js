@@ -1,7 +1,7 @@
 'use strict';
 
 import Config            from 'javascript/config';
-import { Mandelbrot }    from 'javascript/mandelbrot';
+import { Mandelbrot }    from 'javascript/equations/fractal';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import Viewport          from 'javascript/viewport';
 

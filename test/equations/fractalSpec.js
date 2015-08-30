@@ -1,6 +1,6 @@
 'use strict';
 
-import { Mandelbrot } from 'javascript/Mandelbrot';
+import { Mandelbrot } from 'javascript/equations/fractal';
 
 describe('Mandelbrot', () => {
   it('returns 0 for locations within the mandelbrot set', () => {
