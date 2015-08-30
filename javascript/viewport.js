@@ -88,7 +88,7 @@ var VIEWPORT_PROTOTYPE = {
     var locationHash = this.locationHash();
 
     setLocationHash(locationHash);
-    this.renderer.render(locationHash);
+    this.renderer.render({ locationHash: locationHash });
   },
   bindToCanvas: function (canvas, renderer) {
     var self = this;
