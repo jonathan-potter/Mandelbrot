@@ -24,12 +24,21 @@ settings that can be activated by modifying the query string directly
 
  * `(setting_name): (default_value) (description)`
  * iterations: (256) iteration depth for the Mandelbrot calculation
- * super_samples: (1) number of super samples rendered 
+ * super_samples: (1) number of super samples rendered
+
+## Tests
+
+Instructions:
+--------
+```
+npm test
+```
 
 ## Technologies Used
 ##### Development and Build
  * [Babel](https://babeljs.io/)
  * [ESLint](http://eslint.org/)
+ * [Karma](http://karma-runner.github.io/)
  * [Node.js](https://nodejs.org/)
  * [Webpack](http://webpack.github.io/)
 
