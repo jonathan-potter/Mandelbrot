@@ -1,7 +1,6 @@
 'use strict';
 
 import Config            from 'javascript/config';
-import { Mandelbrot }    from 'javascript/equations/fractal';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import Viewport          from 'javascript/viewport';
 
@@ -9,16 +8,17 @@ var CONFIG;
 export default {
   activelyRendering: false,
   canvas: null,
-  init: function () {
+  init: function ({ equation }) {
+    this.equation = equation;
     this.canvas = document.getElementById("mandelbrot");
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
     this.context = this.canvas.getContext("2d");
   },
-  render: function (locationHash) {
-    if (!locationHash) { locationHash = parseLocationHash(locationHash); }
-
+  render: function ({ equation = this.equation, locationHash = parseLocationHash() }) {
     var self = this;
+
+    self.equation = equation;
     
     CONFIG = Config.getConfig(locationHash);
 
@@ -35,25 +35,25 @@ export default {
     new Promise(function (resolve) {
       self.activelyRendering = true;
       console.time('render timer');
-      requestAnimationFrame(self.renderRows.bind(self, 0, resolve));
+      requestAnimationFrame(self.renderRows.bind(self, equation, 0, resolve));
     }).then(function () {
       self.activelyRendering = false;
       console.timeEnd('render timer');
     });
     /* eslint-enable no-console */
   },
-  renderRows: function (y_index, resolve, timestamp) {
+  renderRows: function (equation, y_index, resolve, timestamp) {
     while(y_index < this.canvas.height && performance.now() - timestamp < 1000.0 / CONFIG.render_fps) {
-      this.renderRow(y_index++);
+      this.renderRow(equation, y_index++);
     }
 
     if (y_index < this.canvas.height) {
-      requestAnimationFrame(this.renderRows.bind(this, y_index, resolve));
+      requestAnimationFrame(this.renderRows.bind(this, equation, y_index, resolve));
     } else {
       requestAnimationFrame(resolve);
     }
   },
-  renderRow: function (y_index) {
+  renderRow: function (equation, y_index) {
     var ITERATIONS = CONFIG.iterations;
     var SUPER_SAMPLES = CONFIG.super_samples;
 
@@ -70,7 +70,7 @@ export default {
         var x = topLeft.x + (x_index + Math.random()) * dx;
         var y = topLeft.y + (y_index + Math.random()) * dy;
 
-        crossoverIteration += Mandelbrot(x, y);
+        crossoverIteration += equation(x, y);
       }
 
       var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
