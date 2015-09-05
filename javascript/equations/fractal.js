@@ -30,4 +30,11 @@ function Mandelbrot(x, y) {
   });
 }
 
-export { Mandelbrot };
+function Julia(x, y) {
+  return Fractal({
+    c: {real: -0.835, imaginary: 0.2321},
+    z: {real: x, imaginary: y}
+  });
+}
+
+export { Mandelbrot, Julia };
