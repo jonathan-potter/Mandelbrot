@@ -42,8 +42,10 @@ export default {
     });
     /* eslint-enable no-console */
   },
-  renderRows: function (equation, y_index, resolve, timestamp) {
-    while(y_index < this.canvas.height && performance.now() - timestamp < 1000.0 / CONFIG.render_fps) {
+  renderRows: function (equation, y_index, resolve) {
+    let timestamp = (new Date()).getTime();
+
+    while(y_index < this.canvas.height && (new Date()).getTime() - timestamp < 1000.0 / CONFIG.render_fps) {
       this.renderRow(equation, y_index++);
     }
 
