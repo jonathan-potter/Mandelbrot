@@ -8,41 +8,39 @@ var CONFIG;
 export default {
   activelyRendering: false,
   canvas: null,
-  init: function ({ equation }) {
+  init({ equation }) {
     this.equation = equation;
     this.canvas = document.getElementById("mandelbrot");
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
     this.context = this.canvas.getContext("2d");
   },
-  render: function ({ equation = this.equation, locationHash = parseLocationHash() }) {
-    var self = this;
-
-    self.equation = equation;
+  render({ equation = this.equation, locationHash = parseLocationHash() }) {
+    this.equation = equation;
     
     CONFIG = Config.getConfig(locationHash);
 
-    self.viewport = Viewport({
+    this.viewport = Viewport({
       bounds: {
         x: {min: CONFIG.x_min, max: CONFIG.x_max},
         y: {min: CONFIG.y_min, max: CONFIG.y_max} 
       },
-      canvas: self.canvas,
-      renderer: self
+      canvas: this.canvas,
+      renderer: this
     });
     
     /* eslint-disable no-console */
-    new Promise(function (resolve) {
-      self.activelyRendering = true;
+    new Promise(resolve => {
+      this.activelyRendering = true;
       console.time('render timer');
-      requestAnimationFrame(self.renderRows.bind(self, equation, 0, resolve));
-    }).then(function () {
-      self.activelyRendering = false;
+      requestAnimationFrame(this.renderRows.bind(this, equation, 0, resolve));
+    }).then(() => {
+      this.activelyRendering = false;
       console.timeEnd('render timer');
     });
     /* eslint-enable no-console */
   },
-  renderRows: function (equation, y_index, resolve) {
+  renderRows(equation, y_index, resolve) {
     let timestamp = (new Date()).getTime();
 
     while(y_index < this.canvas.height && (new Date()).getTime() - timestamp < 1000.0 / CONFIG.render_fps) {
@@ -55,7 +53,7 @@ export default {
       requestAnimationFrame(resolve);
     }
   },
-  renderRow: function (equation, y_index) {
+  renderRow(equation, y_index) {
     var ITERATIONS = CONFIG.iterations;
     var SUPER_SAMPLES = CONFIG.super_samples;
 
