@@ -1,13 +1,15 @@
 'use strict';
 
+import HashSubscriber from 'hash-subscriber';
+
 import assign from 'lodash/object/assign';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import setLocationHash from 'javascript/tools/setLocationHash';
+    
+const HIGHLIGHT_COLOR = 'white';
+const ZOOM_SIZE = 0.1;
 
-var HIGHLIGHT_COLOR = 'white';
-var ZOOM_SIZE = 0.1;
-
-var VIEWPORT_PROTOTYPE = {
+const VIEWPORT_PROTOTYPE = {
   xBounds: {min: 0, max: 0},
   yBounds: {min: 0, max: 0},
   setBounds: function (bounds) {
@@ -88,7 +90,6 @@ var VIEWPORT_PROTOTYPE = {
     var locationHash = this.locationHash();
 
     setLocationHash(locationHash);
-    this.renderer.render({ locationHash: locationHash });
   },
   bindToCanvas: function (canvas, renderer) {
     var self = this;

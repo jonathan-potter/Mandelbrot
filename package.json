@@ -14,22 +14,23 @@
   },
   "homepage": "https://github.com/jonathan-potter/Mandelbrot",
   "dependencies": {
-    "webpack": "^1.11.0",
+    "css-loader": "^0.16.0",
+    "hash-subscriber": "^0.1.1",
     "lodash": "^3.10.1",
     "style-loader": "^0.12.3",
-    "css-loader": "^0.16.0"
+    "webpack": "^1.11.0"
   },
   "devDependencies": {
     "babel-core": "^5.8.22",
     "babel-loader": "^5.3.2",
     "extract-text-webpack-plugin": "^0.8.2",
     "jasmine-core": "^2.3.4",
-    "phantomjs": "^1.9.18",
     "karma": "^0.13.9",
-    "karma-webpack": "^1.7.0",
     "karma-jasmine": "^0.2.2",
+    "karma-nyan-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^0.2.1",
-    "karma-nyan-reporter": "^0.2.2"
+    "karma-webpack": "^1.7.0",
+    "phantomjs": "^1.9.18"
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start"

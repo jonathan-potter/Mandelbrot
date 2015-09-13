@@ -1,8 +1,13 @@
 'use strict';
 
 import Config from 'javascript/config';
+import HashSubscriber from 'hash-subscriber';
 
 var max_iterations = Config.getConfig().iterations;
+HashSubscriber.subscribe(['iterations'], params => {
+  max_iterations = Config.getConfig(params).iterations;
+});
+
 export default function Fractal(pixel, iteration) {
   if (iteration >= max_iterations) { return 0; }
   /* the base equation for the mandelbrot set is  */

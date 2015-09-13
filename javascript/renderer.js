@@ -1,11 +1,13 @@
 'use strict';
 
+import HashSubscriber from 'hash-subscriber';
+
 import Config            from 'javascript/config';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import Viewport          from 'javascript/viewport';
 
-var CONFIG;
-export default {
+let CONFIG;
+const Renderer = {
   activelyRendering: false,
   canvas: null,
   init({ equation }) {
@@ -85,3 +87,9 @@ export default {
     this.context.putImageData(imageData, 0, y_index);
   }
 };
+
+HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], params => {
+  Renderer.render({ locationHash: params });
+});
+
+export default Renderer;
