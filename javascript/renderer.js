@@ -6,7 +6,8 @@ import Config            from 'javascript/config';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import Viewport          from 'javascript/viewport';
 
-let CONFIG;
+/* these values are constant for a particular render */
+let CONFIG, SUPER_SAMPLES, DX, DY, TOP_LEFT;
 const Renderer = {
   activelyRendering: false,
   canvas: null,
@@ -21,6 +22,7 @@ const Renderer = {
     this.equation = equation;
     
     CONFIG = Config.getConfig(locationHash);
+    SUPER_SAMPLES = CONFIG.super_samples;
 
     this.viewport = Viewport({
       bounds: {
@@ -30,6 +32,10 @@ const Renderer = {
       canvas: this.canvas,
       renderer: this
     });
+
+    DX = this.viewport.delta().x;
+    DY = this.viewport.delta().y;
+    TOP_LEFT = this.viewport.topLeft();
     
     /* eslint-disable no-console */
     new Promise(resolve => {
@@ -56,35 +62,31 @@ const Renderer = {
     }
   },
   renderRow(equation, y_index) {
-    var ITERATIONS = CONFIG.iterations;
-    var SUPER_SAMPLES = CONFIG.super_samples;
-
-    var dx = this.viewport.delta().x;
-    var dy = this.viewport.delta().y;
-
     var imageData = new ImageData(this.canvas.width, 1);
-    var topLeft = this.viewport.topLeft();
 
     for (var x_index = 0; x_index < this.canvas.width; x_index++) {
+      let value = this.renderPixel(x_index, y_index, equation) / SUPER_SAMPLES;
 
-      var crossoverIteration = 0;
-      for (var sample = 0; sample < SUPER_SAMPLES; sample++) {
-        var x = topLeft.x + (x_index + Math.random()) * dx;
-        var y = topLeft.y + (y_index + Math.random()) * dy;
-
-        crossoverIteration += equation(x, y);
-      }
-
-      var color = (255 / ITERATIONS) / SUPER_SAMPLES * crossoverIteration;
-
-      var dataIndex = x_index * 4;
+      let dataIndex = x_index * 4;
       imageData.data[dataIndex + 0] = 255;
       imageData.data[dataIndex + 1] = 255;
       imageData.data[dataIndex + 2] = 255;
-      imageData.data[dataIndex + 3] = color;
+      imageData.data[dataIndex + 3] = value;
     }
 
     this.context.putImageData(imageData, 0, y_index);
+  },
+  renderPixel(x_index, y_index, equation) {
+    let superSampledValue = 0;
+
+    for (let sample = 0; sample < SUPER_SAMPLES; sample++) {
+      var x = TOP_LEFT.x + (x_index + Math.random()) * DX;
+      var y = TOP_LEFT.y + (y_index + Math.random()) * DY;
+
+      superSampledValue += equation(x, y);
+    }
+    
+    return superSampledValue;
   }
 };
 

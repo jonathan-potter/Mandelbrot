@@ -1,7 +1,5 @@
 'use strict';
 
-import HashSubscriber from 'hash-subscriber';
-
 import assign from 'lodash/object/assign';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 import setLocationHash from 'javascript/tools/setLocationHash';

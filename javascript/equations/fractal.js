@@ -29,17 +29,21 @@ export default function Fractal(pixel, iteration) {
 }
 
 function Mandelbrot(x, y) {
-  return Fractal({
+  return colorize(Fractal({
     c: {real: x, imaginary: y},
     z: {real: 0, imaginary: 0}
-  });
+  }));
 }
 
 function Julia(x, y) {
-  return Fractal({
+  return colorize(Fractal({
     c: {real: -0.835, imaginary: 0.2321},
     z: {real: x, imaginary: y}
-  });
+  }));
+}
+
+function colorize(iterations) {
+  return 255 / max_iterations * iterations;
 }
 
 export { Mandelbrot, Julia };
