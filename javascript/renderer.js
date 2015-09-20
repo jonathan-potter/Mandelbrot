@@ -4,18 +4,15 @@ import HashSubscriber from 'hash-subscriber';
 
 import Config            from 'javascript/config';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
-import Viewport          from 'javascript/viewport';
+
+import assign from 'lodash/object/assign';
 
 /* these values are constant for a particular render */
 let CONFIG, SUPER_SAMPLES, DX, DY, TOP_LEFT;
 const Renderer = {
-  activelyRendering: false,
-  canvas: null,
-  init({ equation }) {
-    this.equation = equation;
-    this.canvas = document.getElementById("mandelbrot");
-    this.canvas.width = this.canvas.offsetWidth;
-    this.canvas.height = this.canvas.offsetHeight;
+  init({ applicationStatus, canvas, equation, viewport }) {
+    assign(this, { applicationStatus, canvas, equation, viewport });
+
     this.context = this.canvas.getContext("2d");
   },
   render({ equation = this.equation, locationHash = parseLocationHash() }) {
@@ -24,26 +21,17 @@ const Renderer = {
     CONFIG = Config.getConfig(locationHash);
     SUPER_SAMPLES = CONFIG.super_samples;
 
-    this.viewport = Viewport({
-      bounds: {
-        x: {min: CONFIG.x_min, max: CONFIG.x_max},
-        y: {min: CONFIG.y_min, max: CONFIG.y_max} 
-      },
-      canvas: this.canvas,
-      renderer: this
-    });
-
     DX = this.viewport.delta().x;
     DY = this.viewport.delta().y;
     TOP_LEFT = this.viewport.topLeft();
     
     /* eslint-disable no-console */
     new Promise(resolve => {
-      this.activelyRendering = true;
+      this.applicationStatus.activelyRendering = true;
       console.time('render timer');
       requestAnimationFrame(this.renderRows.bind(this, equation, 0, resolve));
     }).then(() => {
-      this.activelyRendering = false;
+      this.applicationStatus.activelyRendering = false;
       console.timeEnd('render timer');
     });
     /* eslint-enable no-console */

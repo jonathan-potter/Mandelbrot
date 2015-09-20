@@ -89,15 +89,18 @@ const VIEWPORT_PROTOTYPE = {
 
     setLocationHash(locationHash);
   },
-  bindToCanvas: function (canvas, renderer) {
+  bindToCanvas: function (canvas) {
     var self = this;
 
-    self.renderer = renderer;
     self.canvas = canvas;
+    self.canvas.width = this.canvas.offsetWidth;
+    self.canvas.height = this.canvas.offsetHeight;
+    self.width = self.canvas.width;
+    self.height = self.canvas.height;
     self.width = canvas.width;
     self.height = canvas.height;
     self.canvas.addEventListener('click', function (event) {
-      if (!self.renderer.activelyRendering) {
+      if (!self.applicationStatus.activelyRendering) {
         var canvasClickLocation    = self.canvasClickLocation(event);
         var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
 
@@ -125,7 +128,7 @@ const VIEWPORT_PROTOTYPE = {
     context.stroke();
   },
   growToAspectRatio: function () {
-    var windowAspectRatio = this.width / this.height;
+    var canvasAspectRatio = this.canvas.width / this.canvas.height;
 
     var range = this.range();
     var center = this.center();
@@ -134,11 +137,11 @@ const VIEWPORT_PROTOTYPE = {
     var newDistanceFromCenter;
     var xBounds = this.xBounds;
     var yBounds = this.yBounds;
-    if (currentAspectRatio > windowAspectRatio) {
+    if (currentAspectRatio > canvasAspectRatio) {
       /* height needs expansion */
       var verticalEdgeToCenterDistance = yBounds.min - center.y;
 
-      newDistanceFromCenter = verticalEdgeToCenterDistance * (currentAspectRatio / windowAspectRatio);
+      newDistanceFromCenter = verticalEdgeToCenterDistance * (currentAspectRatio / canvasAspectRatio);
       yBounds = {
         min: center.y + newDistanceFromCenter,
         max: center.y - newDistanceFromCenter
@@ -147,7 +150,7 @@ const VIEWPORT_PROTOTYPE = {
       /* width needs expansion */
       var horizontalEdgeToCenterDistance = xBounds.min - center.x;
 
-      newDistanceFromCenter = horizontalEdgeToCenterDistance * (windowAspectRatio / currentAspectRatio);
+      newDistanceFromCenter = horizontalEdgeToCenterDistance * (canvasAspectRatio / currentAspectRatio);
       xBounds = {
         min: center.x + newDistanceFromCenter,
         max: center.x - newDistanceFromCenter
@@ -161,12 +164,12 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({bounds, canvas, renderer}) {
+export default function ({applicationStatus, bounds, canvas}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
+  viewport.applicationStatus = applicationStatus;
   viewport.setBounds(bounds);
   viewport.bindToCanvas(canvas);
-  viewport.renderer = renderer;
 
   return viewport;
 }
