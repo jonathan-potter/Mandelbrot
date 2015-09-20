@@ -1,0 +1,10 @@
+html, body, header, div, menu, ul, li, heading, a, nav, i, section, canvas {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  list-style: none;
+  font-size: inherit;
+  color: black;
+  text-decoration: none;
+}

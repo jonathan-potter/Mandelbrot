@@ -23,11 +23,63 @@ heading {
   letter-spacing: 2px;
 }
 
-nav {
+.left {
+  float: left;
+}
+
+.left > ul > li {
+  float: left;
+}
+
+.right {
   float: right;
 }
 
-nav > ul > li {
+.right > ul > li {
   display: inline;
   font-size: 20px;
+}
+
+.header-menu {
+  position: relative;
+  display: inline;
+}
+
+.header-menu-icon {
+  width: 60px;
+  height: 60px;
+
+  text-align: center;
+}
+
+.header-menu-body {
+  display: none;
+}
+
+.header-menu:hover > .header-menu-body {
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 2;
+
+  background-color: white;
+  border: 1px solid #ddd;
+  width: 200px;
+}
+
+.header-menu-body > ul {
+  margin: 0;
+}
+
+.header-menu-item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.header-menu:hover > .header-menu-icon {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.header-menu-item-text {
+  padding-left: 20px;
 }

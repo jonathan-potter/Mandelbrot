@@ -1,5 +1,4 @@
 body {
-  background-color: black;
   text-align: center;
 }
 
@@ -19,4 +18,6 @@ section > .container {
 #mandelbrot {
   width: 100%;
   height: 100%;
+
+  background-color: black;
 }
