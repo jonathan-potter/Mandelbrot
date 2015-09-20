@@ -90,25 +90,23 @@ const VIEWPORT_PROTOTYPE = {
     setLocationHash(locationHash);
   },
   bindToCanvas: function (canvas) {
-    var self = this;
+    this.canvas = canvas;
+    this.canvas.width = this.canvas.offsetWidth;
+    this.canvas.height = this.canvas.offsetHeight;
 
-    self.canvas = canvas;
-    self.canvas.width = this.canvas.offsetWidth;
-    self.canvas.height = this.canvas.offsetHeight;
-    self.width = self.canvas.width;
-    self.height = self.canvas.height;
-    self.width = canvas.width;
-    self.height = canvas.height;
-    self.canvas.addEventListener('click', function (event) {
-      if (!self.applicationStatus.activelyRendering) {
-        var canvasClickLocation    = self.canvasClickLocation(event);
-        var cartesianClickLocation = self.cartesianClickLocation(canvasClickLocation);
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
 
-        self.highlightZoomBox(canvasClickLocation);
-        self.zoomToLocation(cartesianClickLocation);
+    this.canvas.addEventListener('click', event => {
+      if (!this.applicationStatus.activelyRendering) {
+        var canvasClickLocation    = this.canvasClickLocation(event);
+        var cartesianClickLocation = this.cartesianClickLocation(canvasClickLocation);
+
+        this.highlightZoomBox(canvasClickLocation);
+        this.zoomToLocation(cartesianClickLocation);
       }
     });
-    self.growToAspectRatio();
+    this.growToAspectRatio();
   },
   highlightZoomBox: function (location) {
     var context = this.canvas.getContext('2d');
