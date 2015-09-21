@@ -53,7 +53,7 @@ const Renderer = {
     var imageData = new ImageData(this.canvas.width, 1);
 
     for (var x_index = 0; x_index < this.canvas.width; x_index++) {
-      let value = this.renderPixel(x_index, y_index, equation) / SUPER_SAMPLES;
+      let value = this.renderPixel(x_index, y_index, equation);
 
       let dataIndex = x_index * 4;
       imageData.data[dataIndex + 0] = 255;
@@ -74,7 +74,7 @@ const Renderer = {
       superSampledValue += equation(x, y);
     }
     
-    return superSampledValue;
+    return superSampledValue / SUPER_SAMPLES;
   }
 };
 

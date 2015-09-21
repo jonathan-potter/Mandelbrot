@@ -106,6 +106,7 @@ const VIEWPORT_PROTOTYPE = {
         this.zoomToLocation(cartesianClickLocation);
       }
     });
+    
     this.growToAspectRatio();
   },
   highlightZoomBox: function (location) {
