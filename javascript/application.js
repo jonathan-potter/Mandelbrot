@@ -1,6 +1,8 @@
 'use strict';
 
-import { Mandelbrot }    from 'javascript/equations/fractal';
+import HashSubscriber from 'hash-subscriber';
+
+import Fractal, { Mandelbrot }    from 'javascript/equations/fractal';
 import Renderer          from 'javascript/renderer';
 import Viewport          from 'javascript/viewport';
 
@@ -27,9 +29,7 @@ let Application = {
       canvas: this.canvas
     });
 
-    this.renderer = Renderer;
-
-    this.renderer.init({
+    this.renderer = Renderer({
       applicationStatus: this.status,
       canvas: this.canvas,
       equation: Mandelbrot,
@@ -44,3 +44,11 @@ let Application = {
 };
 
 Application.init();
+
+HashSubscriber.subscribe(['iterations'], params => {
+  Fractal.MAX_ITERATIONS = Config.getConfig(params).iterations;
+});
+
+HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], params => {
+  Application.renderer.render({});
+});

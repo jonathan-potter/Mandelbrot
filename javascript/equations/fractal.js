@@ -1,15 +1,9 @@
 'use strict';
 
 import Config from 'javascript/config';
-import HashSubscriber from 'hash-subscriber';
-
-var max_iterations = Config.getConfig().iterations;
-HashSubscriber.subscribe(['iterations'], params => {
-  max_iterations = Config.getConfig(params).iterations;
-});
 
 export default function Fractal(pixel, iteration) {
-  if (iteration >= max_iterations) { return 0; }
+  if (iteration >= Fractal.MAX_ITERATIONS) { return 0; }
   /* the base equation for the mandelbrot set is  */
   /* f(z) = z^2 + c */
 
@@ -28,6 +22,8 @@ export default function Fractal(pixel, iteration) {
   return Fractal(pixel, ++iteration || 1);
 }
 
+Fractal.MAX_ITERATIONS = Config.getConfig().iterations;
+
 function Mandelbrot(x, y) {
   return colorize(Fractal({
     c: {real: x, imaginary: y},
@@ -43,7 +39,7 @@ function Julia(x, y) {
 }
 
 function colorize(iterations) {
-  return 255 / max_iterations * iterations;
+  return 255 / Fractal.MAX_ITERATIONS * iterations;
 }
 
 export { Mandelbrot, Julia };

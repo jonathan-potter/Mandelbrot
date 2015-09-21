@@ -1,7 +1,5 @@
 'use strict';
 
-import HashSubscriber from 'hash-subscriber';
-
 import Config            from 'javascript/config';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
 
@@ -9,7 +7,7 @@ import assign from 'lodash/object/assign';
 
 /* these values are constant for a particular render */
 let CONFIG, SUPER_SAMPLES, DX, DY, TOP_LEFT;
-const Renderer = {
+const RENDERER_PROTOTYPE = {
   init({ applicationStatus, canvas, equation, viewport }) {
     assign(this, { applicationStatus, canvas, equation, viewport });
 
@@ -78,8 +76,10 @@ const Renderer = {
   }
 };
 
-HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], params => {
-  Renderer.render({ locationHash: params });
-});
+export default function ({ applicationStatus, canvas, equation, viewport }) {
+  var renderer = Object.create(RENDERER_PROTOTYPE);
 
-export default Renderer;
+  renderer.init({ applicationStatus, canvas, equation, viewport });
+
+  return renderer;
+}
