@@ -1,4 +1,4 @@
-import Config                  from 'javascript/config';
+import { getConfig }           from 'javascript/config';
 import Fractal, { Mandelbrot } from 'javascript/equations/fractal';
 import Renderer                from 'javascript/Renderer';
 
@@ -13,12 +13,12 @@ let canvas = document.getElementById('mandelbrot');
 
 let renderer = Renderer({
   canvas: canvas,
-  config: Config.getCurrent(),
+  getConfig: getConfig,
   equation: Mandelbrot
 });
 
 HashSubscriber.subscribe(['iterations'], () => {
-  Fractal.MAX_ITERATIONS = Config.getCurrent().iterations;
+  Fractal.MAX_ITERATIONS = getConfig().iterations;
 });
 
 HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], () => {

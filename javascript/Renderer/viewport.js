@@ -8,12 +8,20 @@ const HIGHLIGHT_COLOR = 'white';
 const ZOOM_SIZE = 0.1;
 
 const VIEWPORT_PROTOTYPE = {
-  init: function ({applicationStatus, canvas, config}) {
-    this.applicationStatus = applicationStatus;
+  update: function () {
+    let currentConfig = this.getConfig();
+
     this.setBounds({
-      x: {min: config.x_min, max: config.x_max},
-      y: {min: config.y_min, max: config.y_max}
+      x: {min: currentConfig.x_min, max: currentConfig.x_max},
+      y: {min: currentConfig.y_min, max: currentConfig.y_max}
     });
+
+    this.growToAspectRatio();
+  },
+  init: function ({applicationStatus, canvas, getConfig}) {
+
+    this.applicationStatus = applicationStatus;
+    this.getConfig = getConfig;
     this.bindToCanvas(canvas);
   },
   xBounds: {min: 0, max: 0},
@@ -114,8 +122,6 @@ const VIEWPORT_PROTOTYPE = {
         this.zoomToLocation(cartesianClickLocation);
       }
     });
-    
-    this.growToAspectRatio();
   },
   highlightZoomBox: function (location) {
     var context = this.canvas.getContext('2d');
@@ -171,10 +177,10 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({applicationStatus, canvas, config}) {
+export default function ({applicationStatus, canvas, getConfig}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
-  viewport.init({applicationStatus, canvas, config});
+  viewport.init({applicationStatus, canvas, getConfig});
 
   return viewport;
 }

@@ -22,7 +22,7 @@ export default function Fractal(pixel, iteration) {
   return Fractal(pixel, ++iteration || 1);
 }
 
-Fractal.MAX_ITERATIONS = Config.getCurrent().iterations;
+Fractal.MAX_ITERATIONS = Config.getConfig().iterations;
 
 function Mandelbrot(x, y) {
   return colorize(Fractal({

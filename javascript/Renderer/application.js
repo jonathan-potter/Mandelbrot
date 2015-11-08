@@ -5,19 +5,19 @@ import assign from 'lodash/object/assign';
 
 let APPLICATION_PROTOTYPE = {
   status: { activelyRendering: false },
-  init({canvas, config, equation}) {
-    assign(this, {canvas, config, equation});
+  init({canvas, getConfig, equation}) {
+    assign(this, {canvas, getConfig, equation});
 
     this.viewport = Viewport({
       applicationStatus: this.status,
       canvas: this.canvas,
-      config: this.config
+      getConfig: this.getConfig
     });
 
     this.renderer = Renderer({
       applicationStatus: this.status,
       canvas: this.canvas,
-      config: this.config,
+      getConfig: this.getConfig,
       equation: this.equation,
       viewport: this.viewport
     });
@@ -29,10 +29,10 @@ let APPLICATION_PROTOTYPE = {
   }
 };
 
-export default function ({canvas, config, equation}) {
+export default function ({canvas, getConfig, equation}) {
   var application = Object.create(APPLICATION_PROTOTYPE);
 
-  application.init({canvas, config, equation});
+  application.init({canvas, getConfig, equation});
 
   return application;
 }

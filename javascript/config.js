@@ -14,7 +14,7 @@ var DEFAULT_CONFIG = {
 };
 
 export default {
-  getCurrent: function (locationHash = parseLocationHash()) {
+  getConfig(locationHash = parseLocationHash()) {
     return assign(DEFAULT_CONFIG, locationHash);
   }
 };
