@@ -13,14 +13,14 @@ let canvas = document.getElementById('mandelbrot');
 
 let renderer = Renderer({
   canvas: canvas,
-  config: Config.getConfig(),
+  config: Config.getCurrent(),
   equation: Mandelbrot
 });
 
-HashSubscriber.subscribe(['iterations'], params => {
-  Fractal.MAX_ITERATIONS = Config.getConfig(params).iterations;
+HashSubscriber.subscribe(['iterations'], () => {
+  Fractal.MAX_ITERATIONS = Config.getCurrent().iterations;
 });
 
-HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], params => {
+HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], () => {
   renderer.render({});
 });

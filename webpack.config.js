@@ -5,7 +5,7 @@ module.exports = {
   entry: "./javascript/init",
   output: {
     path: __dirname,
-    filename: "bundle.js",
+    filename: "build/bundle.js",
     sourceMapFilename: "sourcemap"
   },
   resolve: {
@@ -31,7 +31,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin("style.css", {
+    new ExtractTextPlugin("build/style.css", {
       allChunks: true
     })
   ],

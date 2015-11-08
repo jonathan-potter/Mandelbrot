@@ -16,7 +16,7 @@ const RENDERER_PROTOTYPE = {
   render({ equation = this.equation, locationHash = parseLocationHash() }) {
     this.equation = equation;
     
-    CONFIG = Config.getConfig(locationHash);
+    CONFIG = Config.getCurrent(locationHash);
     SUPER_SAMPLES = CONFIG.super_samples;
 
     DX = this.viewport.delta().x;
