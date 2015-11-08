@@ -3,8 +3,8 @@
 import HashSubscriber from 'hash-subscriber';
 
 import Fractal, { Mandelbrot }    from 'javascript/equations/fractal';
-import Renderer          from 'javascript/renderer';
-import Viewport          from 'javascript/viewport';
+import Renderer          from './renderer'; 
+import Viewport          from './viewport';
 
 import Config            from 'javascript/config';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
