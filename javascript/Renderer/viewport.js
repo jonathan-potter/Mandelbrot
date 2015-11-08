@@ -1,9 +1,3 @@
-'use strict';
-
-import assign from 'lodash/object/assign';
-import parseLocationHash from 'javascript/tools/parseLocationHash';
-import setLocationHash from 'javascript/tools/setLocationHash';
-    
 const HIGHLIGHT_COLOR = 'white';
 const ZOOM_SIZE = 0.1;
 
@@ -18,10 +12,11 @@ const VIEWPORT_PROTOTYPE = {
 
     this.growToAspectRatio();
   },
-  init: function ({applicationStatus, canvas, getConfig}) {
+  init: function ({applicationStatus, canvas, getConfig, setConfig}) {
 
     this.applicationStatus = applicationStatus;
     this.getConfig = getConfig;
+    this.setConfig = setConfig;
     this.bindToCanvas(canvas);
   },
   xBounds: {min: 0, max: 0},
@@ -31,14 +26,12 @@ const VIEWPORT_PROTOTYPE = {
     this.yBounds = bounds.y;
   },
   locationHash: function () {
-    var query = parseLocationHash();
-
-    return assign({}, query, {
+    return {
       x_min: this.xBounds.min,
       x_max: this.xBounds.max,
       y_min: this.yBounds.min,
       y_max: this.yBounds.max
-    });
+    };
   },
   center: function () {
     return {
@@ -101,9 +94,7 @@ const VIEWPORT_PROTOTYPE = {
       }
     });
 
-    var locationHash = this.locationHash();
-
-    setLocationHash(locationHash);
+    this.setConfig(this.locationHash());
   },
   bindToCanvas: function (canvas) {
     this.canvas = canvas;
@@ -177,10 +168,10 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({applicationStatus, canvas, getConfig}) {
+export default function ({applicationStatus, canvas, getConfig, setConfig}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
-  viewport.init({applicationStatus, canvas, getConfig});
+  viewport.init({applicationStatus, canvas, getConfig, setConfig});
 
   return viewport;
 }

@@ -39,7 +39,7 @@ function Julia(x, y) {
 }
 
 function colorize(iterations) {
-  return 255 / Fractal.MAX_ITERATIONS * iterations;
+  return 256 / Fractal.MAX_ITERATIONS * iterations;
 }
 
 export { Mandelbrot, Julia };

@@ -2,6 +2,7 @@
 
 import assign from 'lodash/object/assign';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
+import setLocationHash from 'javascript/tools/setLocationHash'
 
 var DEFAULT_CONFIG = {
   iterations: 256,
@@ -13,8 +14,18 @@ var DEFAULT_CONFIG = {
   render_fps: 10.0
 };
 
-export default {
+let Config = {
+  currentConfig: {},
   getConfig(locationHash = parseLocationHash()) {
-    return assign(DEFAULT_CONFIG, locationHash);
+    Config.currentConfig = assign({}, DEFAULT_CONFIG, locationHash);
+
+    return Config.currentConfig;
+  },
+  setConfig(configChanges) {
+    let newConfig = assign({}, Config.getConfig(), configChanges);
+
+    setLocationHash(newConfig);
   }
 };
+
+export default Config;

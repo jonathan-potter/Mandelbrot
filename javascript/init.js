@@ -1,6 +1,6 @@
-import { getConfig }           from 'javascript/config';
-import Fractal, { Mandelbrot } from 'javascript/equations/fractal';
-import Renderer                from 'javascript/Renderer';
+import { getConfig, setConfig } from 'javascript/config';
+import Fractal, { Mandelbrot }  from 'javascript/equations/fractal';
+import Renderer                 from 'javascript/Renderer';
 
 import HashSubscriber from 'hash-subscriber';
 
@@ -13,8 +13,9 @@ let canvas = document.getElementById('mandelbrot');
 
 let renderer = Renderer({
   canvas: canvas,
+  equation: Mandelbrot,
   getConfig: getConfig,
-  equation: Mandelbrot
+  setConfig: setConfig
 });
 
 HashSubscriber.subscribe(['iterations'], () => {
@@ -22,5 +23,5 @@ HashSubscriber.subscribe(['iterations'], () => {
 });
 
 HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], () => {
-  renderer.render({});
+  renderer.render();
 });
