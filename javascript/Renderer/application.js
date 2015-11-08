@@ -1,54 +1,38 @@
-'use strict';
+import Renderer from './renderer'; 
+import Viewport from './viewport';
 
-import HashSubscriber from 'hash-subscriber';
+import assign from 'lodash/object/assign';
 
-import Fractal, { Mandelbrot }    from 'javascript/equations/fractal';
-import Renderer          from './renderer'; 
-import Viewport          from './viewport';
-
-import Config            from 'javascript/config';
-import parseLocationHash from 'javascript/tools/parseLocationHash';
-
-import 'dependencies/skeleton/css/normalize.css';
-import 'dependencies/skeleton/css/skeleton.css';
-import 'css/mandelbrot.css';
-import 'css/header.css';
-
-let Application = {
+let APPLICATION_PROTOTYPE = {
   status: { activelyRendering: false },
-  canvas: document.getElementById("mandelbrot"),
-  init() {
-    let CONFIG = Config.getConfig(parseLocationHash());
+  init({canvas, config, equation}) {
+    assign(this, {canvas, config, equation});
 
     this.viewport = Viewport({
       applicationStatus: this.status,
-      bounds: {
-        x: {min: CONFIG.x_min, max: CONFIG.x_max},
-        y: {min: CONFIG.y_min, max: CONFIG.y_max} 
-      },
-      canvas: this.canvas
+      canvas: this.canvas,
+      config: this.config
     });
 
     this.renderer = Renderer({
       applicationStatus: this.status,
       canvas: this.canvas,
-      equation: Mandelbrot,
+      config: this.config,
+      equation: this.equation,
       viewport: this.viewport
     });
 
-    this.renderer.render({});
+    this.render();
   },
   render() {
     this.renderer.render({});
   }
 };
 
-Application.init();
+export default function ({canvas, config, equation}) {
+  var application = Object.create(APPLICATION_PROTOTYPE);
 
-HashSubscriber.subscribe(['iterations'], params => {
-  Fractal.MAX_ITERATIONS = Config.getConfig(params).iterations;
-});
+  application.init({canvas, config, equation});
 
-HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], params => {
-  Application.renderer.render({});
-});
+  return application;
+}

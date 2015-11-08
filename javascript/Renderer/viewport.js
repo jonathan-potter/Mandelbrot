@@ -8,6 +8,14 @@ const HIGHLIGHT_COLOR = 'white';
 const ZOOM_SIZE = 0.1;
 
 const VIEWPORT_PROTOTYPE = {
+  init: function ({applicationStatus, canvas, config}) {
+    this.applicationStatus = applicationStatus;
+    this.setBounds({
+      x: {min: config.x_min, max: config.x_max},
+      y: {min: config.y_min, max: config.y_max}
+    });
+    this.bindToCanvas(canvas);
+  },
   xBounds: {min: 0, max: 0},
   yBounds: {min: 0, max: 0},
   setBounds: function (bounds) {
@@ -163,12 +171,10 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({applicationStatus, bounds, canvas}) {
+export default function ({applicationStatus, canvas, config}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
-  viewport.applicationStatus = applicationStatus;
-  viewport.setBounds(bounds);
-  viewport.bindToCanvas(canvas);
+  viewport.init({applicationStatus, canvas, config});
 
   return viewport;
 }
