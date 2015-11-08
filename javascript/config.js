@@ -2,7 +2,7 @@
 
 import assign from 'lodash/object/assign';
 import parseLocationHash from 'javascript/tools/parseLocationHash';
-import setLocationHash from 'javascript/tools/setLocationHash'
+import setLocationHash from 'javascript/tools/setLocationHash';
 
 var DEFAULT_CONFIG = {
   iterations: 256,
