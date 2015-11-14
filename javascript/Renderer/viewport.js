@@ -1,13 +1,24 @@
-'use strict';
-
-import assign from 'lodash/object/assign';
-import parseLocationHash from 'javascript/tools/parseLocationHash';
-import setLocationHash from 'javascript/tools/setLocationHash';
-    
 const HIGHLIGHT_COLOR = 'white';
 const ZOOM_SIZE = 0.1;
 
 const VIEWPORT_PROTOTYPE = {
+  update: function () {
+    let currentConfig = this.getConfig();
+
+    this.setBounds({
+      x: {min: currentConfig.x_min, max: currentConfig.x_max},
+      y: {min: currentConfig.y_min, max: currentConfig.y_max}
+    });
+
+    this.growToAspectRatio();
+  },
+  init: function ({applicationStatus, canvas, getConfig, setConfig}) {
+
+    this.applicationStatus = applicationStatus;
+    this.getConfig = getConfig;
+    this.setConfig = setConfig;
+    this.bindToCanvas(canvas);
+  },
   xBounds: {min: 0, max: 0},
   yBounds: {min: 0, max: 0},
   setBounds: function (bounds) {
@@ -15,14 +26,12 @@ const VIEWPORT_PROTOTYPE = {
     this.yBounds = bounds.y;
   },
   locationHash: function () {
-    var query = parseLocationHash();
-
-    return assign({}, query, {
+    return {
       x_min: this.xBounds.min,
       x_max: this.xBounds.max,
       y_min: this.yBounds.min,
       y_max: this.yBounds.max
-    });
+    };
   },
   center: function () {
     return {
@@ -85,9 +94,7 @@ const VIEWPORT_PROTOTYPE = {
       }
     });
 
-    var locationHash = this.locationHash();
-
-    setLocationHash(locationHash);
+    this.setConfig(this.locationHash());
   },
   bindToCanvas: function (canvas) {
     this.canvas = canvas;
@@ -106,8 +113,6 @@ const VIEWPORT_PROTOTYPE = {
         this.zoomToLocation(cartesianClickLocation);
       }
     });
-    
-    this.growToAspectRatio();
   },
   highlightZoomBox: function (location) {
     var context = this.canvas.getContext('2d');
@@ -163,12 +168,10 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({applicationStatus, bounds, canvas}) {
+export default function ({applicationStatus, canvas, getConfig, setConfig}) {
   var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
-  viewport.applicationStatus = applicationStatus;
-  viewport.setBounds(bounds);
-  viewport.bindToCanvas(canvas);
+  viewport.init({applicationStatus, canvas, getConfig, setConfig});
 
   return viewport;
 }

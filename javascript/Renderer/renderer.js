@@ -1,24 +1,18 @@
-'use strict';
-
-import Config            from 'javascript/config';
-import parseLocationHash from 'javascript/tools/parseLocationHash';
-
 import assign from 'lodash/object/assign';
 
 /* these values are constant for a particular render */
 let CONFIG, SUPER_SAMPLES, DX, DY, TOP_LEFT;
 const RENDERER_PROTOTYPE = {
-  init({ applicationStatus, canvas, equation, viewport }) {
-    assign(this, { applicationStatus, canvas, equation, viewport });
+  init({ applicationStatus, canvas, equation, getConfig, viewport }) {
+    assign(this, { applicationStatus, canvas, equation, getConfig, viewport });
 
     this.context = this.canvas.getContext("2d");
   },
-  render({ equation = this.equation, locationHash = parseLocationHash() }) {
-    this.equation = equation;
-    
-    CONFIG = Config.getConfig(locationHash);
+  render() {
+    CONFIG = this.getConfig();
     SUPER_SAMPLES = CONFIG.super_samples;
 
+    this.viewport.update();
     DX = this.viewport.delta().x;
     DY = this.viewport.delta().y;
     TOP_LEFT = this.viewport.topLeft();
@@ -27,7 +21,7 @@ const RENDERER_PROTOTYPE = {
     new Promise(resolve => {
       this.applicationStatus.activelyRendering = true;
       console.time('render timer');
-      requestAnimationFrame(this.renderRows.bind(this, equation, 0, resolve));
+      requestAnimationFrame(this.renderRows.bind(this, this.equation, 0, resolve));
     }).then(() => {
       this.applicationStatus.activelyRendering = false;
       console.timeEnd('render timer');
@@ -76,10 +70,10 @@ const RENDERER_PROTOTYPE = {
   }
 };
 
-export default function ({ applicationStatus, canvas, equation, viewport }) {
+export default function ({ applicationStatus, canvas, equation, getConfig, viewport }) {
   var renderer = Object.create(RENDERER_PROTOTYPE);
 
-  renderer.init({ applicationStatus, canvas, equation, viewport });
+  renderer.init({ applicationStatus, canvas, equation, getConfig, viewport });
 
   return renderer;
 }
