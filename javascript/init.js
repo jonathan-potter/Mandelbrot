@@ -20,8 +20,9 @@ let renderer = Renderer({
 
 HashSubscriber.subscribe(['iterations'], () => {
   Fractal.MAX_ITERATIONS = getConfig().iterations;
+  renderer.render();
 });
 
-HashSubscriber.subscribe(['iterations', 'super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], () => {
+HashSubscriber.subscribe(['super_samples', 'x_min', 'x_max', 'y_min', 'y_max'], () => {
   renderer.render();
 });
