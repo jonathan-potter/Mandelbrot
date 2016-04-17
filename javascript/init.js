@@ -1,6 +1,6 @@
 import { getConfig, setConfig } from 'javascript/config';
 import Fractal, { Mandelbrot }  from 'javascript/equations/fractal';
-import Renderer                 from 'javascript/Renderer';
+import Application              from 'javascript/Renderer';
 
 import HashSubscriber from 'hash-subscriber';
 
@@ -11,7 +11,7 @@ import 'css/header.css';
 
 let canvas = document.getElementById('mandelbrot');
 
-let renderer = Renderer({
+let renderer = Application.create({
   canvas: canvas,
   equation: Mandelbrot,
   getConfig: getConfig,

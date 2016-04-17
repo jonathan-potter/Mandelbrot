@@ -8,14 +8,14 @@ let APPLICATION_PROTOTYPE = {
   init({canvas, getConfig, equation, setConfig}) {
     assign(this, {canvas, getConfig, equation, setConfig});
 
-    this.viewport = Viewport({
+    this.viewport = Viewport.create({
       applicationStatus: this.status,
       canvas: this.canvas,
       getConfig: this.getConfig,
       setConfig: this.setConfig
     });
 
-    this.renderer = Renderer({
+    this.renderer = Renderer.create({
       applicationStatus: this.status,
       canvas: this.canvas,
       getConfig: this.getConfig,
@@ -30,10 +30,12 @@ let APPLICATION_PROTOTYPE = {
   }
 };
 
-export default function ({canvas, getConfig, equation, setConfig}) {
-  var application = Object.create(APPLICATION_PROTOTYPE);
+export default {
+  create({canvas, getConfig, equation, setConfig}) {
+    var application = Object.create(APPLICATION_PROTOTYPE);
 
-  application.init({canvas, getConfig, equation, setConfig});
+    application.init({canvas, getConfig, equation, setConfig});
 
-  return application;
-}
+    return application;
+  }
+};

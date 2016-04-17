@@ -70,10 +70,12 @@ const RENDERER_PROTOTYPE = {
   }
 };
 
-export default function ({ applicationStatus, canvas, equation, getConfig, viewport }) {
-  var renderer = Object.create(RENDERER_PROTOTYPE);
+export default {
+  create({ applicationStatus, canvas, equation, getConfig, viewport }) {
+    var renderer = Object.create(RENDERER_PROTOTYPE);
 
-  renderer.init({ applicationStatus, canvas, equation, getConfig, viewport });
+    renderer.init({ applicationStatus, canvas, equation, getConfig, viewport });
 
-  return renderer;
-}
+    return renderer;
+  }
+};

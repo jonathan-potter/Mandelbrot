@@ -13,7 +13,6 @@ const VIEWPORT_PROTOTYPE = {
     this.growToAspectRatio();
   },
   init: function ({applicationStatus, canvas, getConfig, setConfig}) {
-
     this.applicationStatus = applicationStatus;
     this.getConfig = getConfig;
     this.setConfig = setConfig;
@@ -168,10 +167,12 @@ const VIEWPORT_PROTOTYPE = {
   }
 };
 
-export default function ({applicationStatus, canvas, getConfig, setConfig}) {
-  var viewport = Object.create(VIEWPORT_PROTOTYPE);
+export default {
+  create({applicationStatus, canvas, getConfig, setConfig}) {
+    var viewport = Object.create(VIEWPORT_PROTOTYPE);
 
-  viewport.init({applicationStatus, canvas, getConfig, setConfig});
+    viewport.init({applicationStatus, canvas, getConfig, setConfig});
 
-  return viewport;
-}
+    return viewport;
+  }
+};
