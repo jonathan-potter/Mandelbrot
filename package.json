@@ -33,7 +33,7 @@
     "phantomjs": "^1.9.18"
   },
   "scripts": {
-    "dev": "webpack-dev-server",
+    "start": "webpack-dev-server",
     "lint": "eslint ./javascript",
     "test": "./node_modules/karma/bin/karma start"
   }
